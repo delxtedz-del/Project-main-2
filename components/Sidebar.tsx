@@ -60,7 +60,7 @@ export default function Sidebar({ user, onLogout }: SidebarProps) {
   };
 
   return (
-    <aside className="w-80 h-screen shrink-0 bg-white rounded-tr-3xl rounded-br-3xl shadow-[10px_-3px_24.8px_0px_rgba(0,0,0,0.03)] flex flex-col justify-between p-7 select-none relative z-20">
+    <aside className="w-80 h-screen font-line-seed-sans-th shrink-0 bg-white rounded-tr-3xl rounded-br-3xl shadow-[10px_-3px_24.8px_0px_rgba(0,0,0,0.03)] flex flex-col justify-between p-7 select-none relative z-20">
       {/* ส่วนบน: โลโก้ และ เมนูนำทาง */}
       <div>
         {/* Logo EDBMS ตาม Figma */}
