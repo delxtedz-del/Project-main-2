@@ -21,7 +21,7 @@ interface MenuItem {
 const menuItems: MenuItem[] = [
   { name: "ภาพรวม", href: "/dashboard", icon: LayoutGrid },
   { name: "พนักงาน", href: "/", icon: User, matchHrefs: ["/", "/employees"] },
-  { name: "พนักงานเก่า", href: "/former-employees", icon: UserMinus },
+  { name: "พนักงานเก่า", href: "/oldemployee", icon: UserMinus, matchHrefs: ["/oldemployee"] },
   { name: "จัดการสวัสดิการ", href: "/benefits", icon: HeartHandshake },
 ];
 
