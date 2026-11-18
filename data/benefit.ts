@@ -1,16 +1,17 @@
-const benefit = [
+const benefitsData = [
   {
     claimId: "CLM-2611-0001",
     empCode: "CS-001",
     empName: "นาย ปฏิพัทธ์ สร้างตั้น",
     department: "ฝ่ายบริการลูกค้า",
     benefitCategory: "ทุนสอบ Certifications",
+    benefitId: "BEN-05",   
     claimType: "ตนเอง",
     requestDate: "02/11/2569",
     amountRequested: 4500.0,
     amountLimit: 5000,
     status: "pending_hr",
-    statusNote: "รอ HR ตรวจสอบเอกสารตัวจริง",
+    statusNote: "",
     details: {
       certificateName: "AWS Certified Cloud Practitioner",
       instituteName: "Amazon Web Services",
@@ -27,6 +28,7 @@ const benefit = [
     empName: "นางสาว จอร์จ ซาร่า",
     department: "ฝ่ายบริการลูกค้า",
     benefitCategory: "สวัสดิการน้ำท่วม",
+    benefitId: "BEN-01",
     claimType: "ตนเอง",
     requestDate: "03/11/2569",
     amountRequested: 5000.0,
@@ -50,6 +52,7 @@ const benefit = [
     empName: "นาย สมชาย ใจดี",
     department: "ฝ่ายบริการลูกค้า",
     benefitCategory: "ค่ารักษาพยาบาล (พนักงาน)",
+    benefitId:"BEN-02",    
     claimType: "ตนเอง",
     requestDate: "05/11/2569",
     amountRequested: 1000.0,
@@ -71,6 +74,7 @@ const benefit = [
     empName: "นาย ปฏิพัทธ์ สร้างตั้น",
     department: "ฝ่ายบริการลูกค้า",
     benefitCategory: "ค่ารักษาพยาบาล (ครอบครัว)",
+    benefitId:"BEN-03",
     claimType: "ครอบครัว",
     requestDate: "10/11/2569",
     amountRequested: 2000.0,
@@ -88,6 +92,118 @@ const benefit = [
     approvedAmount: 0,
   },
 ];
+
+const BENEFIT_POLICIES: BenefitPolicy[] = [
+  {
+    id: "BEN-01",
+    name: "สวัสดิการน้ำท่วม",
+    maxAmount: [3000, 5000, 10000],
+    amountUnit: "per_time",
+    maxCount: 1,
+    countUnit: "per_year",
+  },
+  {
+    id: "BEN-02",
+    name: "ค่ารักษาพยาบาล (พนักงาน)",
+    maxAmount: 1000,
+    amountUnit: "per_time",
+    maxCount: 30,
+    countUnit: "per_year",
+  },
+  {
+    id: "BEN-03",
+    name: "ค่ารักษาพยาบาล (ครอบครัว)",
+    maxAmount: 30000,
+    amountUnit: "per_year",
+    maxCount: null,
+    countUnit: "unlimited",
+    subLimits: [
+      { label: "IPD (ผู้ป่วยใน)", maxAmount: 20000 },
+      { label: "OPD (ผู้ป่วยนอก)", maxAmount: 2000 },
+    ],
+  },
+  {
+    id: "BEN-04",
+    name: "ทุนการศึกษาระดับปริญญา",
+    maxAmount: null,
+    amountUnit: "lifetime",
+    maxCount: 1,
+    countUnit: "lifetime",
+    subLimits: [
+      { label: "ปริญญาโท", maxAmount: 300000 },
+      { label: "ปริญญาเอก", maxAmount: 700000 },
+    ],
+  },
+  {
+    id: "BEN-05",
+    name: "ทุนสอบ Certifications",
+    maxAmount: 50000,
+    amountUnit: "per_year",
+    maxCount: null,
+    countUnit: "unlimited",
+  },
+  {
+    id: "BEN-06",
+    name: "เงินช่วยเหลือกรณีคลอดบุตร",
+    maxAmount: 10000,
+    amountUnit: "per_time",
+    maxCount: null,
+    countUnit: "unlimited",
+  },
+  {
+    id: "BEN-07",
+    name: "เงินฌาปนกิจ",
+    maxAmount: 10000,
+    amountUnit: "per_time",
+    maxCount: null,
+    countUnit: "unlimited",
+  },
+  {
+    id: "BEN-08",
+    name: "ค่ากิจกรรมนันทนาการ",
+    maxAmount: 3000,
+    amountUnit: "per_year",
+    maxCount: null,
+    countUnit: "unlimited",
+  },
+  {
+    id: "BEN-09",
+    name: "ค่าตรวจสุขภาพ",
+    maxAmount: null,
+    amountUnit: "per_year",
+    maxCount: 1,
+    countUnit: "per_year",
+  },
+  {
+    id: "BEN-10",
+    name: "ค่าทันตกรรม",
+    maxAmount: 3000,
+    amountUnit: "per_year",
+    maxCount: null,
+    countUnit: "unlimited",
+  },
+  {
+    id: "BEN-11",
+    name: "สวัสดิการ AI Subscription",
+    maxAmount: 5000,
+    amountUnit: "per_year",
+    maxCount: null,
+    countUnit: "unlimited",
+  },
+];
+
+export interface BenefitPolicy {
+  id: string;
+  name: string;                                       // ชื่อสวัสดิการ (ตรงกับ benefitCategory)
+  maxAmount: number | number[] | null;                // วงเงินสูงสุด (ใส่เป็นตัวเลข หรือ Array กรณีมีหลายระดับ)
+  amountUnit: "per_time" | "per_year" | "lifetime";   // เงื่อนไขวงเงิน (ต่อครั้ง / ต่อปี / ตลอดอายุงาน)
+  maxCount: number | null;                            // จำนวนครั้งสูงสุด (null = ไม่จำกัดครั้ง)
+  countUnit: "per_year" | "lifetime" | "unlimited";   // เงื่อนไขจำนวนครั้ง
+  subLimits?: {                                       // เผื่อกรณีมีเงื่อนไขย่อย เช่น ป.โท-เอก หรือ IPD OPD
+    label: string;
+    maxAmount: number;
+  }[];
+}
 
 // บังคับค่าสถานะ 4 แบบ
 export type ClaimStatus =
@@ -111,29 +227,96 @@ export const BENEFIT_CATEGORIES: string[] = [
   "สวัสดิการ AI Subscription",
 ];
 // แยกส่วนใน Array ออกมาไม่ให้เป็นก้อน มันจะได้แบบ (BENEFIT_CATEGORIES)[1] คือ สวัสดิการน้ำท่วม ประมาณนี้
-export type BenefitCategory = (typeof BENEFIT_CATEGORIES)[number]
-
-export type Approver = {
-  approver: string | null
-}
+export type BenefitCategory = (typeof BENEFIT_CATEGORIES)[number];
+// คัดมาเฉพาะเลข id จาก BENEFIT_POLICIES ที่มี
+export type BenefitPolicyId = (typeof BENEFIT_POLICIES)[number]["id"];
 
 export interface Benefits {
-    claimId: string ,
-    empCode: string ,
-    empName: string ,
-    department: string ,
-    benefitCategory: BenefitCategory ,
-    claimType: string ,
-    requestDate: string ,
-    amountRequested: number ,
-    amountLimit: number ,
-    status: ClaimStatus ,
-    statusNote: string ,
-    details: {
+  claimId: string;
+  empCode: string;
+  empName: string;
+  department: string;
+  benefitCategory: BenefitCategory;
+  benefitId: BenefitPolicyId,
+  claimType: string;
+  requestDate: string;
+  amountRequested: number;
+  amountLimit: number;
+  status: ClaimStatus;
+  statusNote: string;
+  details: {
     reason: string;
     [key: string]: any;
-    };
-    attachments: string[],
-    approver: string | null ,
-    approvedAmount: number ,
+  };
+  attachments: string[];
+  approver: string | null;
+  approvedAmount: number;
 }
+
+// ข้อกำหนดด้านลิมิตของสวัสดิการทุกประเภทให้ส่งออก
+let benefitpolicy: BenefitPolicy[] = [];
+export const fetchBenefitsPolicy = (): Promise<BenefitPolicy[]> => {
+  return new Promise((resolve, reject) => {
+    setTimeout(
+      () => {
+        if (Math.random() <= 0.9) {
+          if (benefitpolicy.length === 0) {
+            benefitpolicy = BENEFIT_POLICIES.map((e) => ({
+              ...e,
+            })) as BenefitPolicy[];
+          }
+          resolve(benefitpolicy);
+        } else {
+          reject("connection refused");
+        }
+      },
+      1000 + Math.random() * 2000,
+    );
+  });
+};
+
+// เอาข้อมูลสวัสดิการออกมาให้ HR ไปดูในตารางหรือเอาไปดูในตรงอื่นก็ได้
+let benefitdata: Benefits[] = [];
+export const fetchBenefits = (): Promise<Benefits[]> => {
+  return new Promise((resolve, reject) => {
+    setTimeout(
+      () => {
+        if (Math.random() <= 0.9) {
+          if (benefitdata.length === 0) {
+            benefitdata = benefitsData.map((e) => ({
+              ...e,
+            })) as Benefits[];
+          }
+          resolve(benefitdata);
+        } else {
+          reject("connection refused");
+        }
+      },
+      1000 + Math.random() * 2000,
+    );
+  });
+};
+
+// ฟังก์ชั่นไว้หาข้อมูลตามบุคคลในพนักงาน
+export const benefitsSort = (empCode: string): Promise<Benefits[] | any> => {
+  return new Promise((resolve, reject) => {
+    setTimeout(
+      () => {
+        if (Math.random() <= 0.8) {
+          const benefind = benefitsData.filter((e) => e.empCode === empCode);
+
+          // user not found
+          if (benefind.length === 0) {
+            reject("ไม่พบข้อมูลการเบิกสวัสดิการ");
+            return;
+          }
+          // store & return
+          resolve(benefind);
+        } else {
+          reject("connection refused");
+        }
+      },
+      1000 + Math.random() * 2000,
+    );
+  });
+};
