@@ -22,7 +22,7 @@ import {
   mockEmployeesData,
   toEmployeeCardProps,
   ExtendedEmployee,
-} from "@/data/employees";
+} from "@/data/employee";
 
 export default function EmployeesPage() {
   const [employees, setEmployees] =
