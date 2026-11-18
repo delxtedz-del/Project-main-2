@@ -7,13 +7,10 @@ interface ClockProps {
   className?: string;
 }
 
-export function Clock({ showTime = true, className }: ClockProps) {
+export function Clock({ showTime = false, className }: ClockProps) {
   const [now, setNow] = useState<number | null>(null);
 
   useEffect(() => {
-    // Wrap in startTransition so that if any component below suspends
-    // during this update, React keeps the existing UI visible instead
-    // of flashing the nearest outer <Suspense> fallback.
     startTransition(() => {
       setNow(Date.now());
     });
@@ -37,14 +34,13 @@ export function Clock({ showTime = true, className }: ClockProps) {
     month: "short",
     year: "numeric",
   });
-  
 
   return (
     <time className={className} dateTime={date.toISOString()}>
       วันนี้ {thaiDate}
       {showTime && (
-        <span className="ml-2 font-mono text-base font-semibold text-teal-800">
-
+        <span className="ml-2 font-sans text-sm opacity-80">
+          {date.toLocaleTimeString("th-TH", { hour: "2-digit", minute: "2-digit" })}
         </span>
       )}
     </time>

@@ -43,8 +43,8 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="th" className={`${lineSeedSansTH.variable}`}>
-      <body className="flex h-screen overflow-hidden bg-[#FBFBFC]">
+    <html lang="th" className={lineSeedSansTH.variable}>
+      <body className={`${lineSeedSansTH.className} flex h-screen overflow-hidden bg-[#FBFBFC]`}>
         {/* 1. วาง Sidebar ไว้ด้านซ้าย */}
         <Sidebar />
 

@@ -1,4 +1,4 @@
-import { EmployeeCardItem } from "@/types/hr";
+import { EmployeeCardItem } from "@/data/hr";
 import { Employee } from "@/components/EmployeeCard";
 
 export interface ExtendedEmployee extends EmployeeCardItem {

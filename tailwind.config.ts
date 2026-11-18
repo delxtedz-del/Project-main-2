@@ -4,7 +4,7 @@ const config: Config = {
   content: [
     "./pages/**/*.{js,ts,jsx,tsx}",
     "./components/**/*.{js,ts,jsx,tsx}",
-	
+    "./app/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
     extend: {
@@ -47,6 +47,7 @@ const config: Config = {
         "num-1": "0.8px solid #f3f4f6",
       },
       fontFamily: {
+        sans: ["var(--font-line-seed-th)", "sans-serif"],
         "line-seed-sans-th": ["var(--font-line-seed-th)", "sans-serif"],
       },
       borderRadius: {
