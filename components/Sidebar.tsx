@@ -21,7 +21,7 @@ interface MenuItem {
 const menuItems: MenuItem[] = [
   { name: "ภาพรวม", href: "/dashboard", icon: LayoutGrid },
   { name: "พนักงาน", href: "/", icon: User, matchHrefs: ["/", "/employees"] },
-  { name: "พนักงานเก่า", href: "/former-employees", icon: UserMinus },
+  { name: "พนักงานเก่า", href: "/oldemployee", icon: UserMinus, matchHrefs: ["/oldemployee"] },
   { name: "จัดการสวัสดิการ", href: "/benefits", icon: HeartHandshake },
 ];
 
@@ -37,6 +37,10 @@ export interface SidebarProps {
 export default function Sidebar({ user, onLogout }: SidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
+
+  if (pathname === "/login" || pathname === "/register") {
+    return null;
+  }
 
   const currentUser = {
     name: user?.name || "นาย ปฏิพัทธ์ สร้างตั้น",
