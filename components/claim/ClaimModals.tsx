@@ -43,7 +43,7 @@ export function ClaimModals({
       }}
       className="flex items-center justify-center p-4"
     >
-      <Modal className="w-full max-w-[440px] outline-none">
+      <Modal className="w-full max-w-110 outline-none">
         <Dialog className="rounded-2xl border border-gray-200 bg-white p-7 text-center shadow-2xl outline-none">
           {/* Popup 1: ข้อมูลยังไม่ถูกบันทึก (กดกลับหน้าภาพรวม หรือ กดยกเลิกฟอร์ม) */}
           {(modalType === "unsaved_back" || modalType === "unsaved_reset") && (

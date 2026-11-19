@@ -107,7 +107,7 @@ export function DatePickerField({
                   onChange(dateValue.toString());
                   setIsOpen(false);
                 }}
-                className="w-[330px] sm:w-[350px]"
+                className="w-82.5 sm:w-87.5"
               >
                 <CalendarHeader className="justify-between gap-1.5">
                   <NavButton slot="previous" />
