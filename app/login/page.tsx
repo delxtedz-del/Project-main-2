@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react";
 import { Turnstile } from "@marsidev/react-turnstile";
+import { login, Credential } from "@/data/Login";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -40,14 +41,18 @@ export default function LoginPage() {
         return;
       }
 
-      localStorage.setItem(
-        "credential",
-        JSON.stringify({ email, loggedInAt: new Date().toISOString() })
-      );
+      const cred = await login(email, password);
 
+      localStorage.setItem("credential", JSON.stringify(cred));
       router.push("/");
-    } catch {
-      setErrorMsg("เกิดข้อผิดพลาดในการเชื่อมต่อ กรุณาลองใหม่");
+    } catch (err) {
+      if (err === "user not found") {
+        setErrorMsg("อีเมลหรือรหัสผ่านไม่ถูกต้อง (รหัสผ่านเริ่มต้นคือ Pass)");
+      } else if (err === "connection refused") {
+        setErrorMsg("การเชื่อมต่อระบบขัดข้อง กรุณากดเข้าสู่ระบบใหม่อีกครั้ง");
+      } else {
+        setErrorMsg("เกิดข้อผิดพลาดในการเชื่อมต่อ กรุณาลองใหม่");
+      }
       setIsLoading(false);
     }
   };
