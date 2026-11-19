@@ -24,7 +24,7 @@ export function CardTitle({ children, className }: ComponentProps<"div">) {
   return (
     <div
       className={cn(
-        "text-xl md:text-2xl font-semibold text-title-50 leading-7 -tracking-[0.2px]",
+        "text-xl md:text-2xl font-semibold text-title-50 leading-7 tracking-[-0.2px]",
         className
       )}
     >
@@ -40,7 +40,7 @@ export function CardDescription({
   return (
     <div
       className={cn(
-        "mt-0.5 text-base text-text-100 leading-6 -tracking-[0.2px]",
+        "mt-0.5 text-base text-text-100 leading-6 tracking-[-0.2px]",
         className
       )}
     >

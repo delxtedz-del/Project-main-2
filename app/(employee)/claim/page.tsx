@@ -875,7 +875,7 @@ export default function ClaimPage() {
               return (
                 <div key={sub.label} className="space-y-1">
                   <div className="flex items-center gap-3">
-                    <label className="flex min-w-[100px] cursor-pointer items-center gap-2 text-sm text-black">
+                    <label className="flex min-w-25 cursor-pointer items-center gap-2 text-sm text-black">
                       <input
                         type="radio"
                         name="subLimitType"
@@ -911,7 +911,7 @@ export default function ClaimPage() {
                       </span>
                     </div>
                   </div>
-                  <p className="pl-[112px] text-xs text-black/55">
+                  <p className="pl-28 text-xs text-black/55">
                     วงเงินสูงสุดไม่เกิน {sub.maxAmount.toLocaleString("en-US")}{" "}
                     บาท
                     {selectedPolicy.amountUnit === "per_year" &&
@@ -1215,7 +1215,7 @@ export default function ClaimPage() {
 
                   {showFamilyOption && (
                     <div className="flex flex-wrap items-center gap-3">
-                      <label className="flex min-w-[96px] cursor-pointer items-center gap-2.5 text-sm text-black">
+                      <label className="flex min-w-24 cursor-pointer items-center gap-2.5 text-sm text-black">
                         <input
                           type="radio"
                           name="claimAs"
@@ -1232,7 +1232,7 @@ export default function ClaimPage() {
                           setSelectedFamilyMember(e.target.value)
                         }
                         className={cn(
-                          "min-w-[220px] flex-1 cursor-pointer rounded-lg border border-gray-400 bg-white px-3 py-2 text-sm text-black transition outline-none hover:border-anyprimary-green-700 focus:border-anyprimary-green-700 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-400",
+                          "min-w-55 flex-1 cursor-pointer rounded-lg border border-gray-400 bg-white px-3 py-2 text-sm text-black transition outline-none hover:border-anyprimary-green-700 focus:border-anyprimary-green-700 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-400",
                           isFamilyInvalid && ERROR_INPUT_CLASS
                         )}
                       >
@@ -1248,7 +1248,7 @@ export default function ClaimPage() {
 
                   {isSupervisor && (
                     <div className="flex flex-wrap items-center gap-3">
-                      <label className="flex min-w-[96px] cursor-pointer items-center gap-2.5 text-sm text-black">
+                      <label className="flex min-w-24 cursor-pointer items-center gap-2.5 text-sm text-black">
                         <input
                           type="radio"
                           name="claimAs"
@@ -1265,7 +1265,7 @@ export default function ClaimPage() {
                           setSelectedEmployeeCode(e.target.value)
                         }
                         className={cn(
-                          "min-w-[220px] flex-1 cursor-pointer rounded-lg border border-gray-400 bg-white px-3 py-2 text-sm text-black transition outline-none hover:border-anyprimary-green-700 focus:border-anyprimary-green-700 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-400",
+                          "min-w-55 flex-1 cursor-pointer rounded-lg border border-gray-400 bg-white px-3 py-2 text-sm text-black transition outline-none hover:border-anyprimary-green-700 focus:border-anyprimary-green-700 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-400",
                           isEmployeeInvalid && ERROR_INPUT_CLASS
                         )}
                       >

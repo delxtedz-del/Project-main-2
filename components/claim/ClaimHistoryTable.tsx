@@ -43,31 +43,31 @@ export function ClaimHistoryTable({
   const colCount = showEmployeeColumn ? 7 : 6;
 
   return (
-    <div className="min-h-[340px] overflow-hidden rounded-xl border border-gray-200 bg-white">
+    <div className="min-h-85 overflow-hidden rounded-xl border border-gray-200 bg-white">
       <TableRoot fullBleed className="border-0">
         <TableHeader className="bg-anyprimary-green-700 text-white [&_th]:border-none [&_th]:text-sm [&_th]:font-medium [&_th]:text-white">
           <TableRow>
-            <TableHead className="w-[130px] text-center whitespace-nowrap">
+            <TableHead className="w-32.5 text-center whitespace-nowrap">
               วันยื่นเรื่อง
             </TableHead>
-            <TableHead className="w-[155px] text-center whitespace-nowrap">
+            <TableHead className="w-38.75 text-center whitespace-nowrap">
               รหัสคำขอ
             </TableHead>
             {showEmployeeColumn && (
-              <TableHead className="min-w-[160px] text-left whitespace-nowrap">
+              <TableHead className="min-w-40 text-left whitespace-nowrap">
                 พนักงาน
               </TableHead>
             )}
-            <TableHead className="min-w-[220px] text-left">
+            <TableHead className="min-w-55 text-left">
               รายละเอียดคำขอ
             </TableHead>
-            <TableHead className="w-[115px] text-center whitespace-nowrap">
+            <TableHead className="w-28.75 text-center whitespace-nowrap">
               ยอดเงิน
             </TableHead>
-            <TableHead className="w-[130px] text-center whitespace-nowrap">
+            <TableHead className="w-32.5 text-center whitespace-nowrap">
               สถานะ
             </TableHead>
-            <TableHead className="w-[135px] text-center whitespace-nowrap">
+            <TableHead className="w-33.75 text-center whitespace-nowrap">
               รอบการโอน
             </TableHead>
           </TableRow>
