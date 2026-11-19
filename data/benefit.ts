@@ -11,7 +11,7 @@ const benefitsData = [
     amountRequested: 4500.0,
     amountLimit: 5000,
     status: "pending_hr",
-    statusNote: "",
+    statusNote: null,
     details: {
       certificateName: "AWS Certified Cloud Practitioner",
       instituteName: "Amazon Web Services",
@@ -21,6 +21,31 @@ const benefitsData = [
     attachments: ["cert_aws_result_cs001.pdf", "receipt_aws_cs001.jpg"],
     approver: null,
     approvedAmount: 0,
+    cutoffdate: "30/10/2569",
+    disbursement: null
+  },
+  {
+    claimId: "CLM-2609-0001",
+    empCode: "CS-001",
+    empName: "นาย ปฏิพัทธ์ สร้างตั้น",
+    department: "ฝ่ายบริการลูกค้า",
+    benefitCategory: "ค่ากิจกรรมนันทนาการ",
+    benefitId: "BEN-08",   
+    claimType: "ตนเอง",
+    requestDate: "02/09/2569",
+    amountRequested: 1200.0,
+    amountLimit: 3000,
+    status: "success",
+    statusNote: null,
+    details: {
+      documentDate: "27/08/2569",
+      reason: "เกม MarioKart เพื่อผ่อนคลาย",
+    },
+    attachments: ["ใบรับรองสุขภาพจิต.pdf", "receipt_MarioKart.jpg"],
+    approver: "นางสาว นันทิดา สวยงาม",
+    approvedAmount: 1200,
+    cutoffdate: "30/08/2569",
+    disbursement: "15/09/2569"
   },
   {
     claimId: "CLM-2611-0002",
@@ -45,6 +70,8 @@ const benefitsData = [
     attachments: ["flood_photo1_cs002.jpg", "flood_photo2_cs002.jpg"],
     approver: "อริยา ติรณะประกิจ",
     approvedAmount: 5000.0,
+    cutoffdate: "30/10/2569",
+    disbursement: null
   },
   {
     claimId: "CLM-2611-0003",
@@ -67,6 +94,8 @@ const benefitsData = [
     attachments: ["medical_cert_cs003.pdf", "receipt_hospital_cs003.jpg"],
     approver: null,
     approvedAmount: 0,
+    cutoffdate: "30/10/2569",
+    disbursement: null
   },
   {
     claimId: "CLM-2611-0004",
@@ -90,10 +119,12 @@ const benefitsData = [
     attachments: ["receipt_family_opd_cs001.jpg"],
     approver: "HR Manager",
     approvedAmount: 0,
+    cutoffdate: "30/11/2569",
+    disbursement: null
   },
 ];
 
-const BENEFIT_POLICIES: BenefitPolicy[] = [
+export const BENEFIT_POLICIES: BenefitPolicy[] = [
   {
     id: "BEN-01",
     name: "สวัสดิการน้ำท่วม",
@@ -210,7 +241,8 @@ export type ClaimStatus =
   | "pending_document"
   | "pending_hr"
   | "approved"
-  | "rejected";
+  | "rejected"
+  | "success";
 
 // หมวดหมู่สวัสดิการ 11 ประเภท
 export const BENEFIT_CATEGORIES: string[] = [
@@ -243,7 +275,7 @@ export interface Benefits {
   amountRequested: number;
   amountLimit: number;
   status: ClaimStatus;
-  statusNote: string;
+  statusNote: string | null;
   details: {
     reason: string;
     [key: string]: any;
@@ -251,6 +283,8 @@ export interface Benefits {
   attachments: string[];
   approver: string | null;
   approvedAmount: number;
+  cutoffdate: string,
+  disbursement: string | null
 }
 
 // ข้อกำหนดด้านลิมิตของสวัสดิการทุกประเภทให้ส่งออก
