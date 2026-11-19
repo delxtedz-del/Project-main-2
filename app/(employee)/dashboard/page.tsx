@@ -24,7 +24,9 @@ import {
   Benefits,
   benefitsSort,
   fetchBenefitsPolicy,
+  getLiveBenefitsData,
 } from "@/data/benefit";
+import { syncEmployeeYearlyQuota } from "@/data/benefitQuota";
 import { User } from "@/data/Login";
 import { Bell, ChevronDown, Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -136,6 +138,13 @@ export default function Page() {
         parsedUser = DEFAULT_USER;
       }
 
+      // แสดงข้อมูลล่าสุดจาก benefitsData + localStorage ทันทีโดยไม่ต้องรอ delay
+      const instantClaims = getLiveBenefitsData().filter(
+        (item) => item.empCode === parsedUser.empCode
+      );
+      setBenefit(instantClaims);
+      setLoading(false);
+
       const [claimsResult, policyResult] = await Promise.allSettled([
         withRetry(() => benefitsSort(parsedUser.empCode)),
         withRetry(() => fetchBenefitsPolicy()),
@@ -150,8 +159,25 @@ export default function Page() {
         } catch {
           // ignore storage quota errors
         }
+        syncEmployeeYearlyQuota(
+          parsedUser.empCode,
+          "2569",
+          policyResult.status === "fulfilled" && Array.isArray(policyResult.value)
+            ? policyResult.value
+            : BENEFIT_POLICIES,
+          claimsResult.value
+        );
       } else {
-        setBenefit([]);
+        const liveClaims = getLiveBenefitsData().filter(
+          (item) => item.empCode === parsedUser.empCode
+        );
+        setBenefit(liveClaims);
+        syncEmployeeYearlyQuota(
+          parsedUser.empCode,
+          "2569",
+          BENEFIT_POLICIES,
+          liveClaims
+        );
       }
 
       if (policyResult.status === "fulfilled" && Array.isArray(policyResult.value)) {

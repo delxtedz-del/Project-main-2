@@ -1,4 +1,4 @@
-const benefitsData = [
+const benefitsData: Benefits[] = [
   {
     claimId: "CLM-2611-0001",
     empCode: "CS-001",
@@ -309,6 +309,151 @@ export const fetchBenefitsPolicy = (): Promise<BenefitPolicy[]> => {
   });
 };
 
+const ADDED_CLAIMS_STORAGE_KEY = "benefitsAddedData";
+const CANCELLED_CLAIMS_STORAGE_KEY = "benefitsCancelledIds";
+
+function readAddedClaimsFromStorage(): Benefits[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const raw = localStorage.getItem(ADDED_CLAIMS_STORAGE_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? (parsed as Benefits[]) : [];
+  } catch {
+    return [];
+  }
+}
+
+function readCancelledIdsFromStorage(): string[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const raw = localStorage.getItem(CANCELLED_CLAIMS_STORAGE_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? (parsed as string[]) : [];
+  } catch {
+    return [];
+  }
+}
+
+export function getLiveBenefitsData(): Benefits[] {
+  const added = readAddedClaimsFromStorage();
+  const cancelledSet = new Set(readCancelledIdsFromStorage());
+  const merged = new Map<string, Benefits>();
+
+  benefitsData.forEach((item) => {
+    if (!cancelledSet.has(item.claimId)) {
+      merged.set(item.claimId, item);
+    }
+  });
+
+  added.forEach((item) => {
+    if (!cancelledSet.has(item.claimId)) {
+      merged.set(item.claimId, item);
+    }
+  });
+
+  return Array.from(merged.values());
+}
+
+export function generateNextClaimId(date = new Date()): string {
+  const thaiYearShort = String(date.getFullYear() + 543).slice(-2);
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const prefix = `CLM-${thaiYearShort}${month}-`;
+
+  const allClaims = getLiveBenefitsData();
+  let maxSeq = 0;
+  allClaims.forEach((c) => {
+    if (c.claimId.startsWith(prefix)) {
+      const seq = Number(c.claimId.slice(prefix.length));
+      if (!Number.isNaN(seq) && seq > maxSeq) {
+        maxSeq = seq;
+      }
+    }
+  });
+
+  return `${prefix}${String(maxSeq + 1).padStart(4, "0")}`;
+}
+
+export function addBenefitClaim(claim: Benefits): Benefits[] {
+  if (!benefitsData.some((item) => item.claimId === claim.claimId)) {
+    benefitsData.unshift(claim);
+  }
+  if (benefitdata.length > 0 && !benefitdata.some((item) => item.claimId === claim.claimId)) {
+    benefitdata.unshift(claim);
+  }
+
+  if (typeof window !== "undefined") {
+    try {
+      const added = readAddedClaimsFromStorage().filter(
+        (item) => item.claimId !== claim.claimId
+      );
+      localStorage.setItem(
+        ADDED_CLAIMS_STORAGE_KEY,
+        JSON.stringify([claim, ...added])
+      );
+
+      const cancelled = readCancelledIdsFromStorage().filter(
+        (id) => id !== claim.claimId
+      );
+      localStorage.setItem(
+        CANCELLED_CLAIMS_STORAGE_KEY,
+        JSON.stringify(cancelled)
+      );
+
+      const empClaims = getLiveBenefitsData().filter(
+        (item) => item.empCode === claim.empCode
+      );
+      localStorage.setItem("userBenefit", JSON.stringify(empClaims));
+    } catch {
+      // ignore storage quota errors
+    }
+  }
+
+  return getLiveBenefitsData().filter((item) => item.empCode === claim.empCode);
+}
+
+export function cancelBenefitClaim(claimId: string, empCode?: string): Benefits[] {
+  const idx = benefitsData.findIndex((item) => item.claimId === claimId);
+  if (idx !== -1) {
+    benefitsData.splice(idx, 1);
+  }
+  const cacheIdx = benefitdata.findIndex((item) => item.claimId === claimId);
+  if (cacheIdx !== -1) {
+    benefitdata.splice(cacheIdx, 1);
+  }
+
+  if (typeof window !== "undefined") {
+    try {
+      const added = readAddedClaimsFromStorage().filter(
+        (item) => item.claimId !== claimId
+      );
+      localStorage.setItem(ADDED_CLAIMS_STORAGE_KEY, JSON.stringify(added));
+
+      const cancelled = readCancelledIdsFromStorage();
+      if (!cancelled.includes(claimId)) {
+        localStorage.setItem(
+          CANCELLED_CLAIMS_STORAGE_KEY,
+          JSON.stringify([...cancelled, claimId])
+        );
+      }
+
+      if (empCode) {
+        const empClaims = getLiveBenefitsData().filter(
+          (item) => item.empCode === empCode
+        );
+        localStorage.setItem("userBenefit", JSON.stringify(empClaims));
+      }
+    } catch {
+      // ignore storage quota errors
+    }
+  }
+
+  return empCode
+    ? getLiveBenefitsData().filter((item) => item.empCode === empCode)
+    : getLiveBenefitsData();
+}
+
 // เอาข้อมูลสวัสดิการออกมาให้ HR ไปดูในตารางหรือเอาไปดูในตรงอื่นก็ได้
 let benefitdata: Benefits[] = [];
 export const fetchBenefits = (): Promise<Benefits[]> => {
@@ -316,11 +461,9 @@ export const fetchBenefits = (): Promise<Benefits[]> => {
     setTimeout(
       () => {
         if (Math.random() <= 0.9) {
-          if (benefitdata.length === 0) {
-            benefitdata = benefitsData.map((e) => ({
-              ...e,
-            })) as Benefits[];
-          }
+          benefitdata = getLiveBenefitsData().map((e) => ({
+            ...e,
+          })) as Benefits[];
           resolve(benefitdata);
         } else {
           reject("connection refused");
@@ -337,7 +480,9 @@ export const benefitsSort = (empCode: string): Promise<Benefits[] | any> => {
     setTimeout(
       () => {
         if (Math.random() <= 0.8) {
-          const benefind = benefitsData.filter((e) => e.empCode === empCode);
+          const benefind = getLiveBenefitsData().filter(
+            (e) => e.empCode === empCode
+          );
 
           // user not found
           if (benefind.length === 0) {
