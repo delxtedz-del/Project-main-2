@@ -90,7 +90,7 @@ export function ClaimModals({
                   }
                   className="min-w-32 rounded-xl bg-[#d94442] px-6 py-2.5 text-sm font-medium text-white transition hover:bg-[#b93230]"
                 >
-                  {modalType === "unsaved_back" ? "ใช่" : "ล้างข้อมูล"}
+                  {modalType === "unsaved_back" ? "ออกจากหน้านี้" : "ล้างข้อมูล"}
                 </button>
               </div>
             </>

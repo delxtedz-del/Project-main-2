@@ -52,7 +52,7 @@ export function TableHead({ className, ...props }: ComponentProps<"th">) {
 }
 
 const tableRowStyles = cva(
-  "not-last:[&>*]:border-base-200 not-last:[&>td]:border-b not-last:[&>th]:border-b"
+  "not-last:[&>*]:border-base-000 not-last:[&>td]:border-b not-last:[&>th]:border-b"
 );
 
 export function TableRow({ className, ...props }: ComponentProps<"tr">) {

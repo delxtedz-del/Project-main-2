@@ -250,7 +250,7 @@ export function getEmployeeQuotasFast(
     getLiveBenefitsData().filter((item) => item.empCode === empCode);
   const computed = getAllBenefitQuotas(policies, empClaims, fiscalYear, empCode);
 
-  if (fiscalYear === currentFiscalYear) {
+  if (typeof window !== "undefined" && fiscalYear === currentFiscalYear) {
     syncEmployeeYearlyQuota(empCode, fiscalYear, policies, empClaims);
   }
 

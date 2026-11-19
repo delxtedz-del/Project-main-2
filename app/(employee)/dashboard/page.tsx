@@ -16,6 +16,12 @@ import {
   DropdownMenuSection,
   DropdownMenuTrigger,
 } from "@/components/tailgrids/core/dropdown";
+import {
+  TableBody,
+  TableCell,
+  TableRoot,
+  TableRow,
+} from "@/components/tailgrids/core/table";
 import Clock from "@/components/Clock";
 import {
   BENEFIT_POLICIES,
@@ -340,40 +346,70 @@ export default function Page() {
             </div>
           </div>
 
-          <div className="divide-y divide-gray-100 px-6 py-2">
-            {loading ? (
-              <div className="py-8 text-center text-sm text-black/45">
-                กำลังโหลดรายการรอเบิก...
-              </div>
-            ) : pendingClaims.length === 0 ? (
-              <div className="py-8 text-center text-sm text-black/45">
-                ไม่มีรายการรอเบิก
-              </div>
-            ) : (
-              pendingClaims.map((item) => (
-                <div
-                  key={item.claimId}
-                  className="flex items-center justify-between gap-4 py-3.5"
-                >
-                  <div className="flex min-w-0 items-center gap-3.5">
-                    <span className="size-2.5 shrink-0 rounded-full bg-gray-300" />
-                    <div className="min-w-0">
-                      <p className="truncate text-sm font-medium text-black">
-                        {item.benefitCategory}
-                      </p>
-                      <p className="truncate text-xs text-black/45">
-                        {item.details?.reason}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="shrink-0 text-right text-xs font-medium text-black/70">
-                    {getStatusText(item)}
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
+          <TableRoot fullBleed className="border-0">
+            <TableBody>
+              {loading ? (
+                <TableRow>
+                  <TableCell
+                    colSpan={2}
+                    className="py-8 text-center text-sm font-normal text-black/45"
+                  >
+                    กำลังโหลดรายการรอเบิก...
+                  </TableCell>
+                </TableRow>
+              ) : pendingClaims.length === 0 ? (
+                <TableRow>
+                  <TableCell
+                    colSpan={2}
+                    className="py-8 text-center text-sm font-normal text-black/45"
+                  >
+                    ไม่มีรายการรอเบิก
+                  </TableCell>
+                </TableRow>
+              ) : (
+                <>
+                  {pendingClaims.slice(0, 2).map((item) => (
+                    <TableRow
+                      key={item.claimId}
+                      className="border-b border-gray-100 [&>td]:border-gray-100"
+                    >
+                      <TableCell className="px-6 py-3.5">
+                        <div className="flex min-w-0 items-center gap-3.5">
+                          <span className="size-2.5 shrink-0 rounded-full bg-gray-300" />
+                          <div className="min-w-0">
+                            <p className="truncate text-sm font-medium text-black">
+                              {item.benefitCategory}
+                            </p>
+                            <p className="truncate text-xs font-normal text-black/45">
+                              {item.details?.reason}
+                            </p>
+                          </div>
+                        </div>
+                      </TableCell>
+                      <TableCell className="px-6 py-3.5 text-right text-xs font-medium whitespace-nowrap text-black/70">
+                        {getStatusText(item)}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                  <TableRow
+                    onClick={() =>
+                      router.push(
+                        "/historyclaim?status=approved,pending_document,pending_hr"
+                      )
+                    }
+                    className="cursor-pointer transition hover:bg-gray-50"
+                  >
+                    <TableCell
+                      colSpan={2}
+                      className="px-6 py-3 text-center text-xs font-normal text-gray-400"
+                    >
+                      ...คลิกเพื่อดูข้อมูลเต็ม
+                    </TableCell>
+                  </TableRow>
+                </>
+              )}
+            </TableBody>
+          </TableRoot>
         </Card>
       </div>
 

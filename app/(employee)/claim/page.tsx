@@ -2,19 +2,11 @@
 
 import { ClaimModals, ClaimModalType } from "@/components/claim/ClaimModals";
 import { ClaimTrackingView } from "@/components/claim/ClaimTrackingView";
-import Clock from "@/components/Clock";
 import {
-  Calendar,
-  CalendarCell,
-  CalendarGrid,
-  CalendarGridBody,
-  CalendarGridHeader,
-  CalendarHeader,
-  CalendarHeading,
-  CalendarMonthPicker,
-  CalendarYearPicker,
-  NavButton,
-} from "@/components/tailgrids/core/calendar";
+  DatePickerField,
+  formatIsoToThaiSlashDate,
+} from "@/components/claim/DatePickerField";
+import Clock from "@/components/Clock";
 import {
   Combobox,
   ComboboxContent,
@@ -49,11 +41,10 @@ import {
 import { employees } from "@/data/employee";
 import { User } from "@/data/Login";
 import { cn } from "@/utils/cn";
-import { CalendarDate, getLocalTimeZone, parseDate, today } from "@internationalized/date";
+import { CalendarDate, getLocalTimeZone, today } from "@internationalized/date";
 import {
   AlertTriangle,
   Bell,
-  Calendar as CalendarIcon,
   ChevronLeft,
   CloudUpload,
   FileText,
@@ -68,13 +59,6 @@ import {
   useMemo,
   useState,
 } from "react";
-import {
-  Button as AriaButton,
-  Dialog,
-  DialogTrigger,
-  I18nProvider,
-  Popover,
-} from "react-aria-components";
 
 const SUPERVISOR_LEVELS = [4, 8, 12, 13, 14, 18, 22];
 
@@ -205,7 +189,6 @@ export default function ClaimPage() {
   const [selectedEmployeeCode, setSelectedEmployeeCode] = useState<string>("");
 
   const [documentDate, setDocumentDate] = useState<string>("");
-  const [isCalendarOpen, setIsCalendarOpen] = useState<boolean>(false);
 
   const [amountInput, setAmountInput] = useState<string>("");
   const [selectedSubLimitLabel, setSelectedSubLimitLabel] =
@@ -1023,58 +1006,15 @@ export default function ClaimPage() {
       <label className="mb-2 block text-base font-medium text-black">
         {dateLabel}
       </label>
-      <DialogTrigger isOpen={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
-        <AriaButton
-          className={cn(
-            "flex w-full cursor-pointer items-center justify-between rounded-lg border border-gray-400 bg-white px-3.5 py-2.5 text-left text-sm transition outline-none",
-            "hover:border-anyprimary-green-700 hover:bg-emerald-50/20",
-            "focus:border-anyprimary-green-700 focus:ring-4 focus:ring-anyprimary-green-700/15",
-            isDateInvalid && ERROR_INPUT_CLASS
-          )}
-        >
-          <span className={documentDate ? "text-black" : "text-gray-400"}>
-            {documentDate ? formatThaiDate(documentDate) : "dd / mm / yy"}
-          </span>
-          <CalendarIcon className="size-4 shrink-0 text-gray-500" />
-        </AriaButton>
-
-        <Popover
-          placement="bottom start"
-          offset={6}
-          className="z-50 outline-none"
-        >
-          <Dialog className="outline-none">
-            <I18nProvider locale="th-TH-u-ca-gregory">
-              <Calendar
-                aria-label={dateLabel}
-                maxValue={maxSelectableDate}
-                value={documentDate ? parseDate(documentDate) : undefined}
-                onChange={(dateValue) => {
-                  setDocumentDate(dateValue.toString());
-                  setIsCalendarOpen(false);
-                }}
-                className="w-[330px] sm:w-[350px]"
-              >
-                <CalendarHeader className="justify-between gap-1.5">
-                  <NavButton slot="previous" />
-                  <div className="flex flex-1 items-center justify-center gap-2">
-                    <CalendarMonthPicker />
-                    <CalendarYearPicker />
-                  </div>
-                  <NavButton slot="next" />
-                  <CalendarHeading className="sr-only" />
-                </CalendarHeader>
-                <CalendarGrid>
-                  <CalendarGridHeader />
-                  <CalendarGridBody>
-                    {(date) => <CalendarCell date={date} />}
-                  </CalendarGridBody>
-                </CalendarGrid>
-              </Calendar>
-            </I18nProvider>
-          </Dialog>
-        </Popover>
-      </DialogTrigger>
+      <DatePickerField
+        value={documentDate}
+        onChange={setDocumentDate}
+        placeholder="dd / mm / yy"
+        ariaLabel={dateLabel}
+        maxValue={maxSelectableDate}
+        isInvalid={isDateInvalid}
+        formatDisplay={formatIsoToThaiSlashDate}
+      />
     </div>
   );
 
