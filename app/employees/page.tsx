@@ -4,7 +4,6 @@ import React, { useState, useEffect } from "react";
 
 import {
   User,
-  Bell,
   Search,
   Plus,
   X,
@@ -13,9 +12,11 @@ import {
   Calendar,
   CheckCircle2,
   Camera,
+  Upload,
 } from "lucide-react";
 import { EmployeeCard } from "@/components/EmployeeCard";
 import { Clock } from "@/components/Clock";
+import { NotificationBell } from "@/components/notification-bell"; // ปรับ path ตามโฟลเดอร์จริง
 import {
   mockEmployeesData,
   toEmployeeCardProps,
@@ -27,7 +28,6 @@ import {
   AvatarFallback,
   AvatarImage,
 } from "@/components/tailgrids/core/avatar";
-import EmployeeModal from "@/components/EmployeeModal";
 
 const STORAGE_KEY = "edbms-employees";
 
@@ -63,8 +63,23 @@ export default function EmployeesPage() {
     "personal",
   );
   const [newProjectTitle, setNewProjectTitle] = useState("");
-  const [modalEmployee, setModalEmployee] =
-    useState<ExtendedEmployee | null>(null);
+
+  // ฟอร์มสำหรับเพิ่ม/แก้ไขพนักงาน
+  const [formData, setFormData] = useState({
+    id: "",
+    empCode: `HR-${String(employees.length + 1).padStart(3, "0")}`,
+    name: "",
+    nickname: "",
+    position: "เจ้าหน้าที่บริการลูกค้า",
+    department: "ฝ่ายบริการลูกค้า",
+    phone: "",
+    email: "",
+    salary: 30000,
+    tenure: "ทำงานมา 0 ปี 1 เดือน",
+    startDate: "",
+    status: "active",
+    avatarUrl: "",
+  });
 
   // ค้นหาพนักงาน
   const filteredEmployees = employees.filter((emp) => {
@@ -79,53 +94,89 @@ export default function EmployeesPage() {
     );
   });
 
-  // บันทึกข้อมูลพนักงานจาก EmployeeModal (ทั้งเพิ่มใหม่และแก้ไข)
-  const handleSaveEmployee = (empData: Partial<ExtendedEmployee>) => {
-    if (empData.id) {
+  const handleAddEmployee = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!formData.name) return;
+
+    if (formData.id) {
       // โหมดแก้ไขพนักงานที่มีอยู่เดิม
       const updatedList = employees.map((emp) => {
-        if (emp.id === empData.id) {
-          return { ...emp, ...empData } as ExtendedEmployee;
+        if (emp.id === formData.id) {
+          return {
+            ...emp,
+            empCode: formData.empCode,
+            name: formData.name,
+            nickname: formData.nickname || "-",
+            position: formData.position,
+            department: formData.department,
+            phone: formData.phone,
+            email: formData.email,
+            salary: Number(formData.salary),
+            avatarUrl: formData.avatarUrl,
+          };
         }
         return emp;
       });
       setEmployees(updatedList);
-      if (selectedEmployee?.id === empData.id) {
-        setSelectedEmployee((prev) =>
-          prev ? ({ ...prev, ...empData } as ExtendedEmployee) : null
-        );
+      if (selectedEmployee?.id === formData.id) {
+        setSelectedEmployee({
+          ...selectedEmployee,
+          empCode: formData.empCode,
+          name: formData.name,
+          nickname: formData.nickname || "-",
+          position: formData.position,
+          department: formData.department,
+          phone: formData.phone,
+          email: formData.email,
+          salary: Number(formData.salary),
+          avatarUrl: formData.avatarUrl,
+        });
       }
-    } else {
-      // โหมดเพิ่มพนักงานใหม่
-      const newEmp: ExtendedEmployee = {
-        id: Date.now().toString(),
-        empCode:
-          empData.empCode ||
-          `HR-${String(employees.length + 1).padStart(3, "0")}`,
-        name: empData.name || "",
-        nickname: empData.nickname || "-",
-        birthDate: empData.birthDate || "01/01/2543",
-        phone: empData.phone || "080-000-0000",
-        email:
-          empData.email ||
-          `${(empData.name || "").replace(/\s+/g, "").toLowerCase()}@company.com`,
-        address: empData.address || "กรุงเทพมหานคร",
-        emergencyContactName: empData.emergencyContactName,
-        emergencyContactPhone: empData.emergencyContactPhone,
-        position: empData.position || "เจ้าหน้าที่บริการลูกค้า",
-        department: empData.department || "ฝ่ายบริการลูกค้า",
-        employmentType: empData.employmentType || "ประจำ",
-        status: empData.status || "active",
-        startDate: empData.startDate || "01/01/2567",
-        skills: empData.skills || ["Customer Service", "Communication"],
-        notes: empData.notes || "",
-        tenure: empData.tenure || "ทำงานมา 0 ปี 1 เดือน",
-        salary: Number(empData.salary) || 30000,
-        projects: [],
-        avatarUrl: empData.avatarUrl || "",
-      };
-      setEmployees([newEmp, ...employees]);
+      setIsAddModalOpen(false);
+      return;
     }
+
+    // โหมดเพิ่มพนักงานใหม่
+    const newEmp: ExtendedEmployee = {
+      id: Date.now().toString(),
+      empCode: formData.empCode,
+      name: formData.name,
+      nickname: formData.nickname || "-",
+      birthDate: "01/01/2543",
+      phone: formData.phone || "080-000-0000",
+      email:
+        formData.email ||
+        `${formData.name.replace(/\s+/g, "").toLowerCase()}@company.com`,
+      address: "กรุงเทพมหานคร",
+      position: formData.position,
+      department: formData.department,
+      employmentType: "ประจำ",
+      status: formData.status,
+      startDate: formData.startDate,
+      skills: ["Customer Service", "Communication"],
+      tenure: formData.tenure,
+      salary: Number(formData.salary),
+      projects: [],
+      avatarUrl: formData.avatarUrl || "",
+    };
+
+    setEmployees([newEmp, ...employees]);
+    setIsAddModalOpen(false);
+    setFormData({
+      id: "",
+      empCode: `HR-${String(employees.length + 2).padStart(3, "0")}`,
+      name: "",
+      nickname: "",
+      position: "เจ้าหน้าที่บริการลูกค้า",
+      department: "ฝ่ายบริการลูกค้า",
+      phone: "",
+      email: "",
+      salary: 30000,
+      tenure: "ทำงานมา 0 ปี 1 เดือน",
+      startDate: new Date().toLocaleDateString("th-TH"),
+      status: "active",
+      avatarUrl: "",
+    });
   };
 
   const handleAddProject = (e: React.FormEvent) => {
@@ -171,13 +222,7 @@ export default function EmployeesPage() {
             {/* วันที่ และ กระดิ่งแจ้งเตือน */}
             <div className="flex items-center gap-3 self-end sm:self-auto text-[#0b1e1b]">
               <Clock className="text-base font-medium leading-6 tracking-wide text-zinc-900 flex items-center mt-[-22.6px]" />
-              <button
-                type="button"
-                title="การแจ้งเตือน"
-                className="text-[#0b1e1b] hover:text-black p-1 transition-colors cursor-pointer mt-[-22.6px]"
-              >
-                <Bell className="size-6" />
-              </button>
+              <NotificationBell buttonClassName="text-zinc-600 hover:text-black" />
             </div>
           </div>
 
@@ -270,7 +315,21 @@ export default function EmployeesPage() {
                 <button
                   type="button"
                   onClick={() => {
-                    setModalEmployee(selectedEmployee);
+                    setFormData({
+                      id: selectedEmployee.id,
+                      empCode: selectedEmployee.empCode,
+                      name: selectedEmployee.name,
+                      nickname: selectedEmployee.nickname || "",
+                      position: selectedEmployee.position,
+                      department: selectedEmployee.department,
+                      phone: selectedEmployee.phone,
+                      email: selectedEmployee.email,
+                      salary: selectedEmployee.salary,
+                      tenure: selectedEmployee.tenure,
+                      startDate: selectedEmployee.startDate,
+                      status: selectedEmployee.status,
+                      avatarUrl: selectedEmployee.avatarUrl || "",
+                    });
                     setIsAddModalOpen(true);
                   }}
                   className="px-5 py-1.5 border border-zinc-200 text-zinc-700 hover:text-zinc-900 text-xs rounded-xl hover:bg-zinc-200 transition cursor-pointer font-normal"
@@ -682,7 +741,7 @@ export default function EmployeesPage() {
                 </h1>
                 <User className="size-4 text-zinc-900" />
               </div>
-              <p className="text-base font-sans font-thin tracking-tight text-[#0b1e1b] mt-0.5">
+              <p className="text-base font-sans font-thin tracking-tight text-[#0b1e1b] mt-5">
                 รายชื่อทุกคนในระบบ ({filteredEmployees.length} คน) -
                 ค้นหาได้จากชื่อ ตำแหน่ง รหัสพนักงาน หรืออีเมล
               </p>
@@ -691,13 +750,7 @@ export default function EmployeesPage() {
             {/* วันที่ และ กระดิ่งแจ้งเตือน */}
             <div className="flex items-center gap-3 self-end sm:self-auto text-[#0b1e1b]">
               <Clock className="text-base font-medium leading-6 tracking-wide text-zinc-900 flex items-center mt-[-22.6px]" />
-              <button
-                type="button"
-                title="การแจ้งเตือน"
-                className="text-zinc-600 hover:text-black p-1 transition-colors cursor-pointer mt-[-22.6px]"
-              >
-                <Bell className="size-6" />
-              </button>
+              <NotificationBell buttonClassName="text-zinc-600 hover:text-black" />
             </div>
           </div>
 
@@ -728,7 +781,21 @@ export default function EmployeesPage() {
             <button
               type="button"
               onClick={() => {
-                setModalEmployee(null);
+                setFormData({
+                  id: "",
+                  empCode: `HR-${String(employees.length + 1).padStart(3, "0")}`,
+                  name: "",
+                  nickname: "",
+                  position: "เจ้าหน้าที่บริการลูกค้า",
+                  department: "ฝ่ายบริการลูกค้า",
+                  phone: "",
+                  email: "",
+                  salary: 30000,
+                  tenure: "ทำงานมา 0 ปี 1 เดือน",
+                  startDate: new Date().toLocaleDateString("th-TH"),
+                  status: "active",
+                  avatarUrl: "",
+                });
                 setIsAddModalOpen(true);
               }}
               className="w-48 h-12 bg-teal-900 hover:bg-teal-950 text-white text-xl font-medium  rounded-3xl shadow-[4.5px_4.5px_2.2px_0px_rgba(0,0,0,0.25)] shadow-[inset_1.1px_-2.2px_4.9px_0px_rgba(0,0,0,0.05)] flex items-center justify-center gap-2 transition-all cursor-pointer shrink-0"
@@ -761,14 +828,216 @@ export default function EmployeesPage() {
         </div>
       )}
 
-      {/* Component สำหรับเพิ่ม/แก้ไขข้อมูลพนักงานตาม Figma */}
-      <EmployeeModal
-        isOpen={isAddModalOpen}
-        onClose={() => setIsAddModalOpen(false)}
-        onSave={handleSaveEmployee}
-        initialData={modalEmployee}
-        defaultEmpCode={`HR-${String(employees.length + 1).padStart(3, "0")}`}
-      />
+      {/* --- Modal 2: ฟอร์มเพิ่ม/แก้ไขพนักงาน --- */}
+      {isAddModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs p-4">
+          <div className="bg-white rounded-3xl w-full max-w-lg p-6 shadow-2xl border border-zinc-200 relative max-h-[90vh] flex flex-col">
+            <button
+              onClick={() => setIsAddModalOpen(false)}
+              className="absolute top-5 right-5 text-zinc-400 hover:text-zinc-700 p-1 rounded-full hover:bg-zinc-100 transition"
+            >
+              <X className="size-5" />
+            </button>
+
+            <h2 className="text-xl font-bold text-zinc-900 mb-1">
+              {formData.id ? "แก้ไขข้อมูลพนักงาน" : "เพิ่มพนักงานใหม่"}
+            </h2>
+            <p className="text-xs text-zinc-500 mb-4">
+              {formData.id
+                ? "แก้ไขข้อมูลและรูปโปรไฟล์พนักงานในระบบ"
+                : "กรอกข้อมูลเพื่อบันทึกพนักงานเข้าสู่ระบบ EDBMS"}
+            </p>
+
+            <form
+              onSubmit={handleAddEmployee}
+              className="space-y-4 text-sm overflow-y-auto pr-1"
+            >
+              {/* ส่วนอัปโหลดรูปโปรไฟล์ */}
+              <div className="flex items-center gap-4 p-3 bg-zinc-50 rounded-2xl border border-zinc-200">
+                <Avatar
+                  size="lg"
+                  className="shrink-0 border border-zinc-200 bg-white"
+                >
+                  <AvatarImage src={formData.avatarUrl} alt="Preview" />
+                  <AvatarFallback className="rounded-2xl text-sm font-medium text-zinc-500 bg-zinc-100">
+                    {formData.nickname || formData.name.slice(0, 2) || "รูป"}
+                  </AvatarFallback>
+                </Avatar>
+
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-medium text-zinc-700 mb-1">
+                    รูปโปรไฟล์พนักงาน
+                  </p>
+                  <div className="flex items-center gap-2">
+                    <label className="px-3 py-1.5 bg-white border border-zinc-200 text-zinc-700 rounded-xl text-xs font-medium hover:bg-zinc-100 cursor-pointer transition flex items-center gap-1.5 shadow-2xs">
+                      <Upload className="size-3.5 text-zinc-600" />
+                      <span>
+                        {formData.avatarUrl
+                          ? "เปลี่ยนรูป..."
+                          : "เลือกรูปจากเครื่อง..."}
+                      </span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            const reader = new FileReader();
+                            reader.onload = (ev) => {
+                              if (ev.target?.result) {
+                                setFormData((prev) => ({
+                                  ...prev,
+                                  avatarUrl: ev.target!.result as string,
+                                }));
+                              }
+                            };
+                            reader.readAsDataURL(file);
+                          }
+                        }}
+                      />
+                    </label>
+
+                    {formData.avatarUrl && (
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setFormData((prev) => ({ ...prev, avatarUrl: "" }))
+                        }
+                        className="text-xs text-red-500 hover:text-red-700 cursor-pointer underline"
+                      >
+                        ลบรูป
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-medium text-zinc-700 mb-1">
+                    รหัสพนักงาน
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={formData.empCode}
+                    onChange={(e) =>
+                      setFormData({ ...formData, empCode: e.target.value })
+                    }
+                    className="w-full px-3 py-2 bg-zinc-50 border border-zinc-200 rounded-xl text-sm focus:outline-none focus:ring-1 focus:ring-teal-800"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-zinc-700 mb-1">
+                    ชื่อเล่น
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.nickname}
+                    onChange={(e) =>
+                      setFormData({ ...formData, nickname: e.target.value })
+                    }
+                    placeholder="เช่น เปอร์"
+                    className="w-full px-3 py-2 bg-zinc-50 border border-zinc-200 rounded-xl text-sm focus:outline-none focus:ring-1 focus:ring-teal-800"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-zinc-700 mb-1">
+                  ชื่อ-นามสกุล <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={formData.name}
+                  onChange={(e) =>
+                    setFormData({ ...formData, name: e.target.value })
+                  }
+                  placeholder="เช่น นาย ปฏิพัทธ์ สร้างตั้น"
+                  className="w-full px-3 py-2 bg-zinc-50 border border-zinc-200 rounded-xl text-sm focus:outline-none focus:ring-1 focus:ring-teal-800"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-medium text-zinc-700 mb-1">
+                    ตำแหน่ง
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.position}
+                    onChange={(e) =>
+                      setFormData({ ...formData, position: e.target.value })
+                    }
+                    className="w-full px-3 py-2 bg-zinc-50 border border-zinc-200 rounded-xl text-sm focus:outline-none focus:ring-1 focus:ring-teal-800"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-zinc-700 mb-1">
+                    แผนก / ฝ่าย
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.department}
+                    onChange={(e) =>
+                      setFormData({ ...formData, department: e.target.value })
+                    }
+                    className="w-full px-3 py-2 bg-zinc-50 border border-zinc-200 rounded-xl text-sm focus:outline-none focus:ring-1 focus:ring-teal-800"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-medium text-zinc-700 mb-1">
+                    เบอร์โทรศัพท์
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.phone}
+                    onChange={(e) =>
+                      setFormData({ ...formData, phone: e.target.value })
+                    }
+                    placeholder="08X-XXX-XXXX"
+                    className="w-full px-3 py-2 bg-zinc-50 border border-zinc-200 rounded-xl text-sm focus:outline-none focus:ring-1 focus:ring-teal-800"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-zinc-700 mb-1">
+                    อีเมล
+                  </label>
+                  <input
+                    type="email"
+                    value={formData.email}
+                    onChange={(e) =>
+                      setFormData({ ...formData, email: e.target.value })
+                    }
+                    placeholder="email@company.com"
+                    className="w-full px-3 py-2 bg-zinc-50 border border-zinc-200 rounded-xl text-sm focus:outline-none focus:ring-1 focus:ring-teal-800"
+                  />
+                </div>
+              </div>
+
+              <div className="pt-4 flex justify-end gap-2 border-t border-zinc-100">
+                <button
+                  type="button"
+                  onClick={() => setIsAddModalOpen(false)}
+                  className="px-4 py-2 border border-zinc-200 text-zinc-600 rounded-xl hover:bg-zinc-50 transition"
+                >
+                  ยกเลิก
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2 bg-teal-900 text-white rounded-xl hover:bg-teal-950 font-medium transition cursor-pointer"
+                >
+                  บันทึกพนักงาน
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

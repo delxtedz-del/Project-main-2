@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
-import { UserMinus, Bell, Search } from "lucide-react";
+import { UserMinus, Search } from "lucide-react";
+import { NotificationBell } from "@/components/notification-bell";
 import { Clock } from "@/components/Clock";
 
 export default function OldEmployeePage() {
@@ -16,9 +17,9 @@ export default function OldEmployeePage() {
             <h1 className="text-2xl font-medium leading-9 tracking-[0.031em] text-[#0b1e1b]">
               พนักงานเก่า
             </h1>
-            <UserMinus className="size-5 text-[#0b1e1b]" />
+            <UserMinus className="size-4 text-[#0b1e1b]" />
           </div>
-          <p className="text-base font-sans font-thin tracking-tight text-[#0b1e1b] mt-0.5">
+          <p className="text-base font-sans font-thin tracking-tight text-[#0b1e1b] mt-5">
             ประวัติและข้อมูลพนักงานที่ลาออกแล้ว
           </p>
         </div>
@@ -26,13 +27,7 @@ export default function OldEmployeePage() {
         {/* วันที่ และ กระดิ่งแจ้งเตือน */}
         <div className="flex items-center gap-3 self-end sm:self-auto text-[#0b1e1b]">
           <Clock className="text-base font-medium leading-6 tracking-wide text-zinc-900 flex items-center mt-[-22.6px]" />
-          <button
-            type="button"
-            title="การแจ้งเตือน"
-            className="text-[#0b1e1b] hover:text-black p-1 transition-colors cursor-pointer mt-[-22.6px]"
-          >
-            <Bell className="size-6" />
-          </button>
+          <NotificationBell buttonClassName="text-[#0b1e1b] hover:text-black" />
         </div>
       </div>
 
@@ -51,7 +46,7 @@ export default function OldEmployeePage() {
       </div>
 
       {/* กล่องแสดงข้อมูล */}
-      <div className="bg-white rounded-3xl border border-zinc-200/80 p-8 shadow-sm flex flex-col items-center justify-center min-h-[300px] text-center">
+      <div className=" flex flex-col items-center justify-center min-h-[300px] text-center">
         <div className="size-16 rounded-full bg-zinc-100 flex items-center justify-center text-zinc-400 mb-3">
           <UserMinus className="size-8" />
         </div>

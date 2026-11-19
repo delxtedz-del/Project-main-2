@@ -7,9 +7,9 @@ import {
   Modal as AriaModal,
   Dialog as AriaDialog,
   ModalOverlay as AriaModalOverlay,
+  type DialogProps as AriaDialogProps,
   type DialogTriggerProps as AriaDialogTriggerProps,
   type ModalOverlayProps as AriaModalOverlayProps,
-  type ModalRenderProps as AriaModalRenderProps,
 } from "react-aria-components";
 
 export interface OverlayWrapperProps extends AriaDialogTriggerProps {}
@@ -40,9 +40,7 @@ export function Backdrop({
 
 export interface ModalContainerProps
   extends Omit<AriaModalOverlayProps, "children"> {
-  children:
-    | React.ReactNode
-    | ((renderProps: AriaModalRenderProps) => React.ReactNode);
+  children: AriaDialogProps["children"];
   modalClassName?: string;
   dialogClassName?: string;
 }
