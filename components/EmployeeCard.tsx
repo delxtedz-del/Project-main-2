@@ -1,4 +1,9 @@
 import React from "react";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@/components/tailgrids/core/avatar";
 
 export interface Employee {
   id: string;
@@ -8,6 +13,7 @@ export interface Employee {
   department: string;
   tenure: string;
   avatarUrl?: string;
+  status?: string;
 }
 
 interface EmployeeCardProps {
@@ -22,15 +28,12 @@ export const EmployeeCard: React.FC<EmployeeCardProps> = ({ employee }) => {
 >
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-start gap-3.5 min-w-0">
-          {employee.avatarUrl ? (
-            <img
-              src={employee.avatarUrl}
-              alt={employee.name}
-              className="size-14 rounded-lg object-cover shrink-0 bg-zinc-100"
-            />
-          ) : (
-            <div className="size-14 rounded-lg shrink-0 bg-neutral-100" />
-          )}
+          <Avatar size="lg" className="rounded-lg shrink-0">
+            <AvatarImage src={employee.avatarUrl} alt={employee.name} className="rounded-lg" />
+            <AvatarFallback className="rounded-lg text-sm bg-neutral-100 text-zinc-500">
+              {employee.name.slice(0, 2)}
+            </AvatarFallback>
+          </Avatar>
 
           <div className="min-w-0 pt-0.5">
             <h3 className="text-base font-normal text-[#0b1e1b] truncate leading-5">
