@@ -35,6 +35,11 @@
 | Benefit Claim Submission Form & Post-submit Tracking | `app/(employee)/claim/page.tsx`, `components/claim/ClaimModals.tsx`, `components/claim/ClaimTrackingView.tsx` | Dynamic fields per `BEN-01`..`BEN-11`, supervisor proxy claims, draft autosave |
 | Benefit Claim History (filter, search, table, pagination) | `app/(employee)/historyclaim/page.tsx`, `components/claim/ClaimHistorySection.tsx`, `components/claim/ClaimHistoryFilter.tsx`, `components/claim/ClaimHistoryTable.tsx`, `components/claim/claimHistoryUtils.ts` | Supports `?status=approved,pending_document,pending_hr` query param (wrapped in `<Suspense>`) |
 | Reusable Thai Date Picker & Multi-Checkbox Filter | `components/claim/DatePickerField.tsx`, `components/claim/SearchableCheckboxFilter.tsx` | Built on `react-aria-components` + TailGrids Calendar |
+| IT System Overview & Security Dashboard | `app/(edbms-its)/it/page.tsx` | Route `/it`: ภาพรวมระบบ EDBMS, สถิติเชื่อมโยงสด (ผู้ใช้ 35 คน, คำขอทั้งหมด, อนุมัติแล้ว, งบสวัสดิการ), Audit Trail ล่าสุด |
+| Access Management (สิทธิ์การเข้าถึง) | `app/(edbms-its)/access/page.tsx` | Route `/access`: ตั้งค่าสิทธิ์ตามตำแหน่ง 5 ระดับ 9 โมดูล บันทึกลง `localStorage["edbms-permissions"]` และจด Audit Log อัตโนมัติ |
+| Audit Trail Logs (บันทึกการใช้งานระบบ) | `app/(edbms-its)/logs/page.tsx` | Route `/logs`: ตรวจสอบย้อนหลัง, กรองวันที่/คำค้น/ระดับเหตุการณ์ (ปกติ/เฝ้าระวัง) บันทึกลง `localStorage["edbms-audit-logs"]` |
+| Benefits Budget & Emergency Fund | `app/(IT)/benefits/page.tsx`, `app/(IT)/budget/page.tsx` | Route `/benefits`: สรุปงบประมาณสวัสดิการประจำปี และงบสำรองฉุกเฉิน เชื่อมต่อ live claims จาก `data/benefit.ts` |
+| Consideration & Approvals | `app/(IT)/approvals/page.tsx` | Route `/approvals`: รายการคำขอรออนุมัติ พร้อมบันทึกสถานะลง `localStorage["budgetApprovalStatus"]` และส่ง Audit Log สู่ IT |
 
 ---
 
@@ -93,6 +98,15 @@ Do **NOT** confuse these two files:
 - **Functions:** `login(email, pass)` (1–3s delay, 80% success, default password `"Pass"`), `logout(token)` (1–3s delay, 80% success).
 - **Roles & Levels:** `EMP` (1–4), `FIN` (5–8), `AD` (9–12), `MD` (13–14), `HR` (15–18), `IT` (19–22). Supervisor levels in `/claim`: `[4, 8, 12, 13, 14, 18, 22]`.
 
+#### `data/budget.ts` & `data/it.ts` — Budget & IT Security Layer
+- `data/budget.ts`: จัดการงบสวัสดิการรายปี (`yearBudget`), งบสำรองฉุกเฉิน (`reserve`), รายการคำขอระดับองค์กร (`initialRequests`), ฟังก์ชัน `getLiveBudgetRequests()` เชื่อมต่อคำขอสดที่รอตรวจ และ `getLiveBudgetExpenses(year)` รวบรวมยอดเบิกจ่ายที่อนุมัติแล้ว
+- `data/it.ts`: ฐานข้อมูลและฟังก์ชันกลางของส่วน IT:
+  - `currentUser`: ข้อมูล IT Admin (`ปุนยาพร อย่างมั่น`, `IT SUPER ADMIN`)
+  - `modules` (9 โมดูล) & `positions` (5 ตำแหน่งงาน)
+  - `getLiveSystemStats()`: คำนวณยอดผู้ใช้ (35 คน), คำขอรวม, อนุมัติแล้ว, ยอดงบประมาณเบิกจ่ายสด
+  - `getLiveAuditLogs()` & `addAuditLog(action, detail, level, actor, role)`: บันทึกและดึง Audit Trail
+  - `getLivePermissions()` & `savePermissions(position, perms)`: จัดการสิทธิ์การเข้าถึง
+
 #### `data/hr.ts` & `data/finance.ts` — Type Definitions
 - `data/hr.ts`: `HrNavTab`, `ProjectItem`, `EmployeeCardItem`, `FormerEmployeeItem`, `BenefitItem`.
 - `data/finance.ts`: `NavTab`, `TransferItem`, `PaymentRequestItem`, `ChannelReportItem` (reserved for finance module).
@@ -109,6 +123,9 @@ Do **NOT** confuse these two files:
 | `userBenefit` | `Benefits[]` | `addBenefitClaim`, `cancelBenefitClaim`, `/dashboard`, `/historyclaim` | `/historyclaim` |
 | `benefitQuota_<empCode>_<year>` | `YearlyEmployeeQuotaRecord` | `syncEmployeeYearlyQuota`, `getEmployeeQuotasFast` | `getEmployeeQuotasFast` |
 | `claimFormDraft_<empCode>` | `ClaimFormDraft` | `/claim` (autosave on field change; deleted on submit/reset) | `/claim` (restored on mount) |
+| `edbms-audit-logs` | `AuditLog[]` | `addAuditLog`, `AdminProvider`, `ApprovalProvider` | `/it`, `/logs`, `AdminProvider` |
+| `edbms-permissions` | `Record<string, PermMap>` | `/access`, `savePermissions` | `/access`, `AdminProvider` |
+| `budgetApprovalStatus` | `Record<string, ApprovalStatus>` | `/approvals`, `ApprovalProvider` | `/approvals`, `/benefits`, `ApprovalProvider` |
 
 ---
 

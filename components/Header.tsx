@@ -3,15 +3,25 @@
 import { useState } from "react";
 import { Bell } from "lucide-react";
 import { useApprovals } from "./ApprovalProvider";
+import { useAdmin } from "./AdminProvider";
 import Clock from "./Clock";
 
 export default function Header() {
-  const { notices, markAllRead } = useApprovals();
+  const { notices: approvalNotices, markAllRead: markApprovalsRead } = useApprovals();
+  const { notices: adminNotices, markAllRead: markAdminRead } = useAdmin();
   const [open, setOpen] = useState(false);
-  const unread = notices.filter((n) => !n.read).length;
+
+  // รวมรายการแจ้งเตือนจากระบบอนุมัติงบ/สวัสดิการ และเหตุการณ์ระบบไอที/ความปลอดภัย
+  const allNotices = [...(adminNotices || []), ...(approvalNotices || [])];
+  const unread = allNotices.filter((n) => !n.read).length;
+
+  const markAll = () => {
+    markApprovalsRead?.();
+    markAdminRead?.();
+  };
 
   const toggle = () => {
-    if (open) markAllRead(); // ปิดแผง = อ่านทั้งหมดแล้ว
+    if (open) markAll(); // ปิดแผง = อ่านทั้งหมดแล้ว
     setOpen(!open);
   };
 
@@ -38,7 +48,7 @@ export default function Header() {
               <p className="text-sm font-bold text-gray-900">การแจ้งเตือน</p>
               {unread > 0 && (
                 <button
-                  onClick={markAllRead}
+                  onClick={markAll}
                   className="text-xs text-[#105647] hover:underline cursor-pointer"
                 >
                   อ่านทั้งหมดแล้ว
@@ -46,12 +56,12 @@ export default function Header() {
               )}
             </div>
             <ul className="max-h-80 divide-y divide-gray-100 overflow-y-auto">
-              {notices.length === 0 ? (
+              {allNotices.length === 0 ? (
                 <li className="px-3 py-8 text-center text-sm text-gray-400">
                   ไม่มีการแจ้งเตือนในขณะนี้
                 </li>
               ) : (
-                notices.map((n, i) => (
+                allNotices.map((n, i) => (
                   <li
                     key={i}
                     className={`px-3 py-3 text-sm transition hover:bg-gray-50 ${

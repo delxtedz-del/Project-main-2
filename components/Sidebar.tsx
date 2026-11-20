@@ -98,10 +98,22 @@ const employeeBottomItems: MenuItem[] = [
 // เมนูด้านบนสำหรับ IT / ฝ่ายบริหาร
 const itTopItems: MenuItem[] = [
   {
-    name: "ภาพรวมระบบ",
-    href: "/dashboard",
+    name: "ภาพรวมระบบ IT",
+    href: "/it",
     icon: LayoutGrid,
-    matchHrefs: ["/dashboard"],
+    matchHrefs: ["/it"],
+  },
+  {
+    name: "สิทธิ์การเข้าถึง",
+    href: "/access",
+    icon: User,
+    matchHrefs: ["/access"],
+  },
+  {
+    name: "บันทึกการใช้งาน",
+    href: "/logs",
+    icon: History,
+    matchHrefs: ["/logs"],
   },
   {
     name: "ทำเนียบพนักงาน",
@@ -126,7 +138,7 @@ const itBottomItems: MenuItem[] = [
     matchHrefs: ["/benefits", "/budget"],
   },
   {
-    name: "อนุมัติสวัสดิการใหม่",
+    name: "พิจารณาและอนุมัติ",
     href: "/approvals",
     icon: CheckSquare,
     matchHrefs: ["/approvals"],
@@ -178,7 +190,9 @@ export default function Sidebar({ variant = "auto", user, onLogout }: SidebarPro
       pathname.startsWith("/approvals") ||
       pathname.startsWith("/benefits") ||
       pathname.startsWith("/budget") ||
-      pathname.startsWith("/it")
+      pathname.startsWith("/it") ||
+      pathname.startsWith("/access") ||
+      pathname.startsWith("/logs")
     ) {
       activeVariant = "it";
     } else if (
@@ -208,8 +222,8 @@ export default function Sidebar({ variant = "auto", user, onLogout }: SidebarPro
     bottomItems = itBottomItems;
     defaultUser = {
       name: "ปุนยาพร อย่างมั่น",
-      role: "CEO / ฝ่ายบริหาร",
-      avatarUrl: "/avatar.jpg",
+      role: "CEO / ฝ่ายบริหาร (IT)",
+      avatarUrl: "/ITadmin.jpg",
     };
   } else if (activeVariant === "employee") {
     topItems = employeeTopItems;

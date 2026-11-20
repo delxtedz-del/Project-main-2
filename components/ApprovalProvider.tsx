@@ -10,6 +10,7 @@ import {
   type ApprovalStatus,
 } from "@/data/budget";
 import { getLiveBenefitsData } from "@/data/benefit";
+import { addAuditLog } from "@/data/it";
 
 export type Status = ApprovalStatus;
 export type Notice = { text: string; time: string; read: boolean };
@@ -139,6 +140,15 @@ export default function ApprovalProvider({ children }: { children: ReactNode }) 
         : `ไม่อนุมัติ "${r.title}" (ไม่มีการหักงบ)`;
     const time = `${new Date().toLocaleTimeString("th-TH", { hour: "2-digit", minute: "2-digit" })} น.`;
     setNotices([{ text, time, read: false }, ...notices]);
+
+    // บันทึกเข้า Audit Trail กลางของระบบ
+    addAuditLog(
+      act === "approved" ? "อนุมัติคำขอเบิก/งบประมาณ" : "ปฏิเสธคำขอเบิก/งบประมาณ",
+      `${r.type}: ${r.title} · ยอดเงิน ${fmt(r.amount)} บาท · แผนก ${r.department || "ทั่วไป"}`,
+      "normal",
+      "ผู้บริหาร (IT/CEO)",
+      "Executive"
+    );
   };
 
   const markAllRead = () => {
