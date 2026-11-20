@@ -34,7 +34,7 @@ export function signResetToken(email: string): string {
 
 export async function POST(request: Request) {
   try {
-    const body = await request.json();
+    const body = (await request.json()) as { email?: unknown; otp?: unknown };
     const email =
       typeof body?.email === "string" ? body.email.trim().toLowerCase() : "";
     const otp = typeof body?.otp === "string" ? body.otp.trim() : "";

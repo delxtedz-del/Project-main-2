@@ -10,17 +10,17 @@ export default function OldEmployeePage() {
 
   return (
     <div className="p-8 md:p-10 max-w-[1440px] mx-auto min-h-screen">
-      {/* ส่วนหัว: หัวข้อหน้า และ วันที่/การแจ้งเตือน */}
+      {/* ส่วนหัว: หัวข้อหน้า และ วันที่/การแจ้งเตือน ตาม Figma */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div>
           <div className="flex items-center gap-2">
             <h1 className="text-2xl font-medium leading-9 tracking-[0.031em] text-[#0b1e1b]">
               พนักงานเก่า
             </h1>
-            <UserMinus className="size-5 text-[#0b1e1b]" />
+            <UserMinus className="size-4 text-zinc-900" />
           </div>
           <p className="text-base font-sans font-thin tracking-tight text-[#0b1e1b] mt-0.5">
-            ประวัติและข้อมูลพนักงานที่ลาออกแล้ว
+            รายชื่อทุกคนในระบบ (0 คน) - ค้นหาได้จากชื่อ ตำแหน่ง รหัสพนักงาน หรืออีเมล
           </p>
         </div>
 

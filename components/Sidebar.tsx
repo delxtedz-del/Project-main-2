@@ -19,10 +19,10 @@ interface MenuItem {
 }
 
 const menuItems: MenuItem[] = [
-  { name: "ภาพรวม", href: "/dashboard", icon: LayoutGrid },
+  { name: "ภาพรวม", href: "/dashboardhr", icon: LayoutGrid, matchHrefs: ["/dashboardhr"] },
   { name: "พนักงาน", href: "/", icon: User, matchHrefs: ["/", "/employees"] },
   { name: "พนักงานเก่า", href: "/oldemployee", icon: UserMinus, matchHrefs: ["/oldemployee"] },
-  { name: "จัดการสวัสดิการ", href: "/benefits", icon: HeartHandshake },
+  { name: "จัดการสวัสดิการ", href: "/benefits", icon: HeartHandshake, matchHrefs: ["/benefits"] },
 ];
 
 export interface SidebarProps {

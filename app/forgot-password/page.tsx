@@ -1,8 +1,16 @@
 "use client";
 
-import React, { useState, useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react";
+import { updateUserPassword } from "@/data/Login";
+
+type AuthResponse = {
+  success?: boolean;
+  message?: string;
+  resetToken?: string;
+  devOtp?: string;
+};
 
 export default function ForgotPasswordPage() {
   const router = useRouter();
@@ -21,7 +29,10 @@ export default function ForgotPasswordPage() {
   const [showConfirmPass, setShowConfirmPass] = useState(false);
 
   const [errorMsg, setErrorMsg] = useState("");
+  const [devOtp, setDevOtp] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const requestedOtp = useRef(false);
+  const requestId = useRef(0);
 
   // จัดการการพิมพ์ OTP ทีละช่อง + Auto Focus ช่องถัดไป
   const handleOtpChange = (index: number, value: string) => {
@@ -76,13 +87,12 @@ const verifyOtpCode = async (code: string) => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, otp: code }),
       });
-      const data = await res.json();
+      const data = (await res.json()) as AuthResponse;
       if (data.success) {
-        // บันทึก resetToken ที่ได้รับเพื่อส่งต่อไปยัง reset-password
         setResetToken(data.resetToken || "");
-        setStep(3); // ไปหน้ากรอกรหัสผ่านใหม่
+        setStep(3);
       } else {
-        setErrorMsg(data.message || " rhats OTP ไม่ถูกต้อง");
+        setErrorMsg(data.message || "รหัส OTP ไม่ถูกต้อง");
       }
     } catch {
       setErrorMsg("เกิดข้อผิดผิดในการตรวจสอบ OTP");
@@ -91,16 +101,39 @@ const verifyOtpCode = async (code: string) => {
     }
   };
 
-  const handleResendOtp = async () => {
+  const requestOtp = async (notify: boolean) => {
+    const id = ++requestId.current;
     setErrorMsg("");
-    setOtp(["", "", "", "", "", ""]);
-    inputRefs.current[0]?.focus();
-    await fetch("/api/auth/request-otp", {
+    const res = await fetch("/api/auth/request-otp", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email }),
     });
-    alert(`ส่งรหัส OTP ใหม่ไปที่ ${email} แล้ว`);
+    const data = (await res.json()) as AuthResponse;
+    if (id !== requestId.current) return;
+    if (data.devOtp) setDevOtp(data.devOtp);
+    if (!data.success) {
+      setErrorMsg(data.message || "ส่งรหัส OTP ไม่สำเร็จ");
+      return;
+    }
+    if (notify) {
+      alert(data.devOtp ? `รหัส OTP คือ ${data.devOtp}` : `ส่งรหัส OTP ใหม่ไปที่ ${email} แล้ว`);
+    }
+  };
+
+  useEffect(() => {
+    const target = searchParams.get("email");
+    if (!target || requestedOtp.current) return;
+    requestedOtp.current = true;
+    void requestOtp(false);
+    // request once for the email in the URL
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
+
+  const handleResendOtp = async () => {
+    setOtp(["", "", "", "", "", ""]);
+    inputRefs.current[0]?.focus();
+    await requestOtp(true);
   };
 
 const handleResetPassword = async (e: React.FormEvent) => {
@@ -108,11 +141,11 @@ const handleResetPassword = async (e: React.FormEvent) => {
     setErrorMsg("");
 
     if (newPassword.length < 4) {
-      setErrorMsg(" rhats ผ่านต้องมีอย่างน้อย 4 ตัวอักษร");
+      setErrorMsg("รหัสผ่านต้องมีอย่างน้อย 4 ตัวอักษร");
       return;
     }
     if (newPassword !== confirmPassword) {
-      setErrorMsg(" rhats ผ่านใหม่และยืนยัน rhats ผ่านไม่ตรงกัน");
+      setErrorMsg("รหัสผ่านใหม่และยืนยันรหัสผ่านไม่ตรงกัน");
       return;
     }
 
@@ -123,12 +156,13 @@ const handleResetPassword = async (e: React.FormEvent) => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, resetToken, newPassword }),
       });
-      const data = await res.json();
+      const data = (await res.json()) as AuthResponse;
       if (data.success) {
-        alert("เปลี่ยน rhats ผ่านสำเร็จ กรุณาเข้าสู่ระบบใหม่");
+        updateUserPassword(email, newPassword);
+        alert("เปลี่ยนรหัสผ่านสำเร็จ กรุณาเข้าสู่ระบบใหม่");
         router.push("/login");
       } else {
-        setErrorMsg(data.message || "เปลี่ยน rhats ผ่านไม่สำเร็จ");
+        setErrorMsg(data.message || "เปลี่ยนรหัสผ่านไม่สำเร็จ");
       }
     } catch {
       setErrorMsg("เกิดข้อผิดผิดที่เซิร์ฟเวอร์");
@@ -179,6 +213,11 @@ const handleResetPassword = async (e: React.FormEvent) => {
                 โปรดกรอกรหัส OTP ที่เราส่งให้ผ่านทางอีเมล :
               </p>
               <p className="text-xs text-zinc-500 mb-5">{email}</p>
+              {devOtp && (
+                <p className="text-xs text-[#144738] text-center mb-4">
+                  ส่งอีเมลไม่ได้ รหัส OTP สำหรับทดสอบคือ {devOtp}
+                </p>
+              )}
 
               {/* กล่อง OTP 6 ช่อง */}
               <div className="flex justify-between gap-2.5 mb-6" onPaste={handlePaste}>

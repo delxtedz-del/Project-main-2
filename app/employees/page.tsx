@@ -39,11 +39,18 @@ export default function EmployeesPage() {
   useEffect(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) setEmployees(JSON.parse(saved) as ExtendedEmployee[]);
+      if (saved) {
+        const parsed = JSON.parse(saved) as ExtendedEmployee[];
+        window.requestAnimationFrame(() => {
+          setEmployees(parsed);
+        });
+      }
     } catch {
       /* ignore */
     }
-    setHydrated(true);
+    window.requestAnimationFrame(() => {
+      setHydrated(true);
+    });
   }, []);
 
   // บันทึกลง localStorage หลัง hydrate แล้วเท่านั้น เพื่อไม่ทับข้อมูลเดิม

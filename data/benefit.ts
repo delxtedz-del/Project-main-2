@@ -1,4 +1,90 @@
-const benefitsData = [
+export const benefitsData = [
+  {
+    claimId: "QAM030690001",
+    empCode: "HR-001",
+    empName: "Patipat Srangtan",
+    department: "QA",
+    benefitCategory: "สวัสดิการครอบครัว",
+    benefitId: "BEN-03",
+    claimType: "ตนเอง",
+    requestDate: "02 พ.ย. 2569",
+    amountRequested: 3000.0,
+    amountLimit: 5000,
+    status: "pending_hr",
+    statusNote: "รอ HR ตรวจสอบเอกสาร",
+    details: {
+      position: "Staff Member",
+      departmentName: "People Operations",
+      phone: "081-234-5678",
+      benefitType: "ทันตกรรม",
+      receiptDate: "01 พ.ย. 2569",
+      reason: "-",
+    },
+    attachments: [
+      "ใบเสร็จ_cs001.jpg",
+      "ใบเสร็จ_cs002.jpg",
+      "ใบเสร็จ_cs003.jpg",
+    ],
+    approver: null,
+    approvedAmount: 0,
+  },
+  {
+    claimId: "QAM030690002",
+    empCode: "HR-001",
+    empName: "Patipat Srangtan",
+    department: "QA",
+    benefitCategory: "สวัสดิการครอบครัว",
+    benefitId: "BEN-03",
+    claimType: "ตนเอง",
+    requestDate: "02 พ.ย. 2569",
+    amountRequested: 3000.0,
+    amountLimit: 5000,
+    status: "pending_hr",
+    statusNote: "รอ HR ตรวจสอบเอกสาร",
+    details: {
+      position: "Staff Member",
+      departmentName: "People Operations",
+      phone: "081-234-5678",
+      benefitType: "ทันตกรรม",
+      receiptDate: "01 พ.ย. 2569",
+      reason: "-",
+    },
+    attachments: [
+      "ใบเสร็จ_cs001.jpg",
+      "ใบเสร็จ_cs002.jpg",
+    ],
+    approver: null,
+    approvedAmount: 0,
+  },
+  {
+    claimId: "QAM030690003",
+    empCode: "HR-001",
+    empName: "Patipat Srangtan",
+    department: "QA",
+    benefitCategory: "สวัสดิการครอบครัว",
+    benefitId: "BEN-03",
+    claimType: "ตนเอง",
+    requestDate: "02 พ.ย. 2569",
+    amountRequested: 3000.0,
+    amountLimit: 5000,
+    status: "pending_hr",
+    statusNote: "รอ HR ตรวจสอบเอกสาร",
+    details: {
+      position: "Staff Member",
+      departmentName: "People Operations",
+      phone: "081-234-5678",
+      benefitType: "ทันตกรรม",
+      receiptDate: "01 พ.ย. 2569",
+      reason: "-",
+    },
+    attachments: [
+      "ใบเสร็จ_cs001.jpg",
+      "ใบเสร็จ_cs002.jpg",
+      "ใบเสร็จ_cs003.jpg",
+    ],
+    approver: null,
+    approvedAmount: 0,
+  },
   {
     claimId: "CLM-2611-0001",
     empCode: "CS-001",
@@ -13,9 +99,13 @@ const benefitsData = [
     status: "pending_hr",
     statusNote: "",
     details: {
+      position: "เจ้าหน้าที่บริการลูกค้า",
+      departmentName: "ฝ่ายบริการลูกค้า",
+      phone: "081-234-5678",
       certificateName: "AWS Certified Cloud Practitioner",
       instituteName: "Amazon Web Services",
       documentDate: "30/10/2569",
+      receiptDate: "30/10/2569",
       reason: "สอบ Certificate เพื่อนำมาใช้ในสายงาน",
     },
     attachments: ["cert_aws_result_cs001.pdf", "receipt_aws_cs001.jpg"],
@@ -36,10 +126,14 @@ const benefitsData = [
     status: "approved",
     statusNote: "อนุมัติแล้ว รอโอนเงินรอบบัญชีถัดไป",
     details: {
+      position: "เจ้าหน้าที่บริการลูกค้า",
+      departmentName: "ฝ่ายบริการลูกค้า",
+      phone: "082-345-6789",
       floodImpactLevel: 2,
       impactStartDate: "25/10/2569",
       impactEndDate: "01/11/2569",
       addressType: "ตรงกับทะเบียนประวัติพนักงาน",
+      receiptDate: "01/11/2569",
       reason: "น้ำท่วมเข้าภายในตัวบ้านชั้น 1 ทำให้เฟอร์นิเจอร์เสียหาย",
     },
     attachments: ["flood_photo1_cs002.jpg", "flood_photo2_cs002.jpg"],
@@ -57,11 +151,15 @@ const benefitsData = [
     requestDate: "05/11/2569",
     amountRequested: 1000.0,
     amountLimit: 5000,
-    status: "pending_document",
+    status: "pending_hr",
     statusNote: "พนักงานต้องนำส่งใบเสร็จตัวจริงให้ HR ภายในวันที่ 20",
     details: {
+      position: "เจ้าหน้าที่เทคนิค",
+      departmentName: "ฝ่ายบริการลูกค้า",
+      phone: "083-456-7890",
       medicalType: "OPD",
       documentDate: "04/11/2569",
+      receiptDate: "04/11/2569",
       reason: "ไข้หวัด (OPD) รพ. ศิริราช",
     },
     attachments: ["medical_cert_cs003.pdf", "receipt_hospital_cs003.jpg"],
@@ -82,9 +180,13 @@ const benefitsData = [
     status: "rejected",
     statusNote: "ไม่อนุมัติ เนื่องจากใช้สิทธิ์วงเงินของปีนี้ครบแล้ว",
     details: {
+      position: "เจ้าหน้าที่บริการลูกค้า",
+      departmentName: "ฝ่ายบริการลูกค้า",
+      phone: "081-234-5678",
       familyMemberName: "นาย สมศักดิ์ สร้างตั้น (บิดา)",
       medicalType: "OPD",
       documentDate: "09/11/2569",
+      receiptDate: "09/11/2569",
       reason: "พาบิดาไปตรวจสุขภาพประจำปี",
     },
     attachments: ["receipt_family_opd_cs001.jpg"],
@@ -246,7 +348,7 @@ export interface Benefits {
   statusNote: string;
   details: {
     reason: string;
-    [key: string]: any;
+    [key: string]: string | number | boolean | undefined;
   };
   attachments: string[];
   approver: string | null;
@@ -298,7 +400,7 @@ export const fetchBenefits = (): Promise<Benefits[]> => {
 };
 
 // ฟังก์ชั่นไว้หาข้อมูลตามบุคคลในพนักงาน
-export const benefitsSort = (empCode: string): Promise<Benefits[] | any> => {
+export const benefitsSort = (empCode: string): Promise<Benefits[]> => {
   return new Promise((resolve, reject) => {
     setTimeout(
       () => {
@@ -311,7 +413,7 @@ export const benefitsSort = (empCode: string): Promise<Benefits[] | any> => {
             return;
           }
           // store & return
-          resolve(benefind);
+          resolve(benefind as Benefits[]);
         } else {
           reject("connection refused");
         }
@@ -320,3 +422,129 @@ export const benefitsSort = (empCode: string): Promise<Benefits[] | any> => {
     );
   });
 };
+
+export interface BenefitPolicyConfig {
+  id: string;
+  code: string;
+  name: string;
+  category: string;
+  subtitle: string;
+  maxPerTimeText: string;
+  limitPerTime: string;
+  eligibleGroup: string;
+  requiredDocs: string;
+  claimAs: string;
+  formType: string;
+  duration: "range" | "permanent";
+  startDate?: string;
+  endDate?: string;
+  description?: string;
+  quotaType?: string;
+  maxPerTimeAmount?: string;
+  maxTimesPerYear?: string;
+  maxPerYearAmount?: string;
+  active: boolean;
+}
+
+export const initialBenefitPolicies: BenefitPolicyConfig[] = [
+  {
+    id: "AID-01",
+    code: "AID-01",
+    name: "ค่ารักษาพยาบาล (ส่วนที่เกินจากประกัน)",
+    category: "ค่ารักษาพยาบาล",
+    subtitle: "เบิกได้ไม่เกิน 1,000 บ./ครั้ง",
+    maxPerTimeText: "สูงสุด ครั้งละ 10,000 บาท",
+    limitPerTime: "10,000 บาท",
+    eligibleGroup: "พนักงานทุกคน",
+    requiredDocs: "ใบรับรองแพทย์,ใบเสร็จรับเงิน",
+    claimAs: "ตนเอง",
+    formType: "ฟอร์มค่ารักษาพยาบาล",
+    duration: "permanent",
+    description: "ค่ารักษาพยาบาลกรณีเกินวงเงินประกันกลุ่มประจำปี",
+    quotaType: "ต่อครั้ง",
+    maxPerTimeAmount: "10,000 บาท",
+    maxTimesPerYear: "30 ครั้ง",
+    maxPerYearAmount: "30,000 บาท",
+    active: true,
+  },
+  {
+    id: "AID-02",
+    code: "AID-02",
+    name: "ค่ารักษาพยาบาล (ส่วนที่เกินจากประกัน)",
+    category: "ค่ารักษาพยาบาล",
+    subtitle: "เบิกได้ไม่เกิน 1,000 บ./ครั้ง",
+    maxPerTimeText: "สูงสุด ครั้งละ 10,000 บาท",
+    limitPerTime: "10,000 บาท",
+    eligibleGroup: "พนักงานทุกคน",
+    requiredDocs: "ใบรับรองแพทย์,ใบเสร็จรับเงิน",
+    claimAs: "ตนเอง",
+    formType: "ฟอร์มค่ารักษาพยาบาล",
+    duration: "permanent",
+    description: "เบิกค่ารักษาพยาบาลเพิ่มเติมกรณีฉุกเฉิน",
+    quotaType: "ต่อครั้ง",
+    maxPerTimeAmount: "10,000 บาท",
+    maxTimesPerYear: "30 ครั้ง",
+    maxPerYearAmount: "30,000 บาท",
+    active: true,
+  },
+  {
+    id: "AID-03",
+    code: "AID-03",
+    name: "ค่ารักษาพยาบาล (ส่วนที่เกินจากประกัน)",
+    category: "ค่ารักษาพยาบาล",
+    subtitle: "เบิกได้ไม่เกิน 1,000 บ./ครั้ง",
+    maxPerTimeText: "สูงสุด ครั้งละ 10,000 บาท",
+    limitPerTime: "10,000 บาท",
+    eligibleGroup: "พนักงานทุกคน",
+    requiredDocs: "ใบรับรองแพทย์,ใบเสร็จรับเงิน",
+    claimAs: "ตนเอง",
+    formType: "ฟอร์มค่ารักษาพยาบาล",
+    duration: "permanent",
+    description: "เบิกค่ารักษาพยาบาลเพิ่มเติม",
+    quotaType: "ต่อครั้ง",
+    maxPerTimeAmount: "10,000 บาท",
+    maxTimesPerYear: "30 ครั้ง",
+    maxPerYearAmount: "30,000 บาท",
+    active: true,
+  },
+  {
+    id: "AID-04",
+    code: "AID-04",
+    name: "ค่ารักษาพยาบาล (ส่วนที่เกินจากประกัน)",
+    category: "ค่ารักษาพยาบาล",
+    subtitle: "เบิกได้ไม่เกิน 1,000 บ./ครั้ง",
+    maxPerTimeText: "สูงสุด ครั้งละ 10,000 บาท",
+    limitPerTime: "10,000 บาท",
+    eligibleGroup: "พนักงานทุกคน",
+    requiredDocs: "ใบรับรองแพทย์,ใบเสร็จรับเงิน",
+    claimAs: "ตนเอง",
+    formType: "ฟอร์มค่ารักษาพยาบาล",
+    duration: "permanent",
+    description: "สวัสดิการค่ารักษาพยาบาล",
+    quotaType: "ต่อครั้ง",
+    maxPerTimeAmount: "10,000 บาท",
+    maxTimesPerYear: "30 ครั้ง",
+    maxPerYearAmount: "30,000 บาท",
+    active: false,
+  },
+  {
+    id: "AID-05",
+    code: "AID-05",
+    name: "ค่ารักษาพยาบาล (ส่วนที่เกินจากประกัน)",
+    category: "ค่ารักษาพยาบาล",
+    subtitle: "เบิกได้ไม่เกิน 1,000 บ./ครั้ง",
+    maxPerTimeText: "สูงสุด ครั้งละ 10,000 บาท",
+    limitPerTime: "10,000 บาท",
+    eligibleGroup: "พนักงานทุกคน",
+    requiredDocs: "ใบรับรองแพทย์,ใบเสร็จรับเงิน",
+    claimAs: "ตนเอง",
+    formType: "ฟอร์มค่ารักษาพยาบาล",
+    duration: "permanent",
+    description: "สวัสดิการค่ารักษาพยาบาล",
+    quotaType: "ต่อครั้ง",
+    maxPerTimeAmount: "10,000 บาท",
+    maxTimesPerYear: "30 ครั้ง",
+    maxPerYearAmount: "30,000 บาท",
+    active: false,
+  },
+];
