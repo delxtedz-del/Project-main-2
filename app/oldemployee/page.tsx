@@ -1,8 +1,9 @@
 "use client";
 
 import React, { useState } from "react";
-import { UserMinus, Bell, Search } from "lucide-react";
+import { UserMinus, Search } from "lucide-react";
 import { Clock } from "@/components/Clock";
+import { NotificationBell } from "@/components/notification-bell";
 
 export default function OldEmployeePage() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -26,13 +27,7 @@ export default function OldEmployeePage() {
         {/* วันที่ และ กระดิ่งแจ้งเตือน */}
         <div className="flex items-center gap-3 self-end sm:self-auto text-[#0b1e1b]">
           <Clock className="text-base font-medium leading-6 tracking-wide text-zinc-900 flex items-center mt-[-22.6px]" />
-          <button
-            type="button"
-            title="การแจ้งเตือน"
-            className="text-[#0b1e1b] hover:text-black p-1 transition-colors cursor-pointer mt-[-22.6px]"
-          >
-            <Bell className="size-6" />
-          </button>
+          <NotificationBell />
         </div>
       </div>
 
@@ -51,7 +46,7 @@ export default function OldEmployeePage() {
       </div>
 
       {/* กล่องแสดงข้อมูล */}
-      <div className="bg-white rounded-3xl border border-zinc-200/80 p-8 shadow-sm flex flex-col items-center justify-center min-h-[300px] text-center">
+      <div className=" flex flex-col items-center justify-center min-h-[300px] text-center">
         <div className="size-16 rounded-full bg-zinc-100 flex items-center justify-center text-zinc-400 mb-3">
           <UserMinus className="size-8" />
         </div>

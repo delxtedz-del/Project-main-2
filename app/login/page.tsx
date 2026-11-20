@@ -1,13 +1,14 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react";
-import { Turnstile } from "@marsidev/react-turnstile";
+import { Turnstile, type TurnstileInstance } from "@marsidev/react-turnstile";
 import { login, Credential } from "@/data/Login";
 
 export default function LoginPage() {
   const router = useRouter();
+  const turnstileRef = useRef<TurnstileInstance | null>(null);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -15,46 +16,63 @@ export default function LoginPage() {
   const [errorMsg, setErrorMsg] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
+  const turnstileSiteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || "";
+  const turnstileEnabled =
+    turnstileSiteKey !== "" && turnstileSiteKey !== "...";
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg("");
 
-    if (!turnstileToken) {
-      setErrorMsg("กรุณายืนยันตัวตนผ่าน Cloudflare Turnstile ก่อนเข้าสู่ระบบ");
+    if (turnstileEnabled && !turnstileToken) {
+      setErrorMsg("กรุณายืนยันตัว_formผ่าน Cloudflare Turnstile ก่อนเข้าสู่ระบบ");
       return;
     }
 
     setIsLoading(true);
 
     try {
-      const verifyRes = await fetch("/api/verify-turnstile", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token: turnstileToken }),
-      });
+      if (turnstileEnabled && turnstileToken) {
+        const verifyRes = await fetch("/api/verify-turnstile", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ token: turnstileToken }),
+        });
 
-      const verifyData = await verifyRes.json();
+        const verifyData = await verifyRes.json();
 
-      if (!verifyData.success) {
-        setErrorMsg("การยืนยันตัวตนไม่สำเร็จ กรุณาลองใหม่อีกครั้ง");
-        setIsLoading(false);
-        return;
+        if (!verifyData.success) {
+          setErrorMsg("การยืนยันตัว_formไม่สำเร็จ กรุณาลองใหม่อีกครั้ง");
+          turnstileRef.current?.reset();
+          setTurnstileToken(null);
+          setIsLoading(false);
+          return;
+        }
       }
 
-      const cred = await login(email, password);
+      const cred: Credential = await login(email, password);
 
       localStorage.setItem("credential", JSON.stringify(cred));
       router.push("/");
     } catch (err) {
       if (err === "user not found") {
-        setErrorMsg("อีเมลหรือรหัสผ่านไม่ถูกต้อง (รหัสผ่านเริ่มต้นคือ Pass)");
+        setErrorMsg("อีเมลหรือ rhats ผ่านไม่ถูกต้อง (rhats ผ่านเริ่มต้นคือ Pass)");
       } else if (err === "connection refused") {
         setErrorMsg("การเชื่อมต่อระบบขัดข้อง กรุณากดเข้าสู่ระบบใหม่อีกครั้ง");
       } else {
-        setErrorMsg("เกิดข้อผิดพลาดในการเชื่อมต่อ กรุณาลองใหม่");
+        setErrorMsg("เกิดข้อผิดผิดในการเชื่อมต่อ กรุณาลองใหม่");
       }
+      turnstileRef.current?.reset();
+      setTurnstileToken(null);
       setIsLoading(false);
     }
+  };
+
+const handleForgotPassword = () => {
+    const query = email.trim()
+      ? `?email=${encodeURIComponent(email.trim())}`
+      : "";
+    router.push(`/forgot-password${query}`);
   };
 
   return (
@@ -109,7 +127,6 @@ export default function LoginPage() {
               <div className="relative">
                 <input
                   type={showPassword ? "text" : "password"}
-                  required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
@@ -133,10 +150,9 @@ export default function LoginPage() {
             <div className="flex justify-end mb-5">
               <button
                 type="button"
-                onClick={() =>
-                  alert("ระบบได้ส่งลิงก์รีเซ็ตรหัสผ่านไปยังอีเมลของคุณแล้ว")
-                }
-                className="text-[11px] text-zinc-400 font-thin hover:text-zinc-700 transition cursor-pointer"
+                onClick={handleForgotPassword}
+                disabled={isLoading}
+                className="text-[11px] text-zinc-400 font-thin hover:text-zinc-700 transition cursor-pointer disabled:opacity-50"
               >
                 ลืมรหัสผ่าน
               </button>
@@ -153,27 +169,30 @@ export default function LoginPage() {
           </form>
 
           {/* กล่องตรวจสอบสิทธิ์ Cloudflare Turnstile ของจริง */}
-          <div className="mt-4 flex flex-col items-center">
-            <Turnstile
-              siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || ""}
-              onSuccess={(token) => {
-                setTurnstileToken(token);
-                setErrorMsg("");
-              }}
-              onExpire={() => setTurnstileToken(null)}
-              onError={() => setTurnstileToken(null)}
-              options={{
-                theme: "light",
-                language: "th",
-              }}
-            />
+          {turnstileEnabled && (
+            <div className="mt-4 flex flex-col items-center">
+              <Turnstile
+                ref={turnstileRef}
+                siteKey={turnstileSiteKey}
+                onSuccess={(token) => {
+                  setTurnstileToken(token);
+                  setErrorMsg("");
+                }}
+                onExpire={() => setTurnstileToken(null)}
+                onError={() => setTurnstileToken(null)}
+                options={{
+                  theme: "light",
+                  language: "th",
+                }}
+              />
 
-            {errorMsg && (
-              <p className="text-xs text-red-500 text-center font-medium mt-2">
-                {errorMsg}
-              </p>
-            )}
-          </div>
+              {errorMsg && (
+                <p className="text-xs text-red-500 text-center font-medium mt-2">
+                  {errorMsg}
+                </p>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </div>

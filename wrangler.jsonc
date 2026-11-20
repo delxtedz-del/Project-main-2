@@ -1,0 +1,14 @@
+{
+  "name": "edbms",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2025-03-25",
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "assets": { "directory": ".open-next/assets", "binding": "ASSETS" },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "edbms-db",
+      "database_id": "e5051b51-9c91-4764-a8ad-110898f57107"
+    }
+  ]
+}

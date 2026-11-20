@@ -4,7 +4,6 @@ import React, { useState, useEffect } from "react";
 
 import {
   User,
-  Bell,
   Search,
   Plus,
   X,
@@ -16,6 +15,7 @@ import {
 } from "lucide-react";
 import { EmployeeCard } from "@/components/EmployeeCard";
 import { Clock } from "@/components/Clock";
+import { NotificationBell } from "@/components/notification-bell";
 import {
   mockEmployeesData,
   toEmployeeCardProps,
@@ -171,13 +171,7 @@ export default function EmployeesPage() {
             {/* วันที่ และ กระดิ่งแจ้งเตือน */}
             <div className="flex items-center gap-3 self-end sm:self-auto text-[#0b1e1b]">
               <Clock className="text-base font-medium leading-6 tracking-wide text-zinc-900 flex items-center mt-[-22.6px]" />
-              <button
-                type="button"
-                title="การแจ้งเตือน"
-                className="text-[#0b1e1b] hover:text-black p-1 transition-colors cursor-pointer mt-[-22.6px]"
-              >
-                <Bell className="size-6" />
-              </button>
+              <NotificationBell />
             </div>
           </div>
 
@@ -691,13 +685,7 @@ export default function EmployeesPage() {
             {/* วันที่ และ กระดิ่งแจ้งเตือน */}
             <div className="flex items-center gap-3 self-end sm:self-auto text-[#0b1e1b]">
               <Clock className="text-base font-medium leading-6 tracking-wide text-zinc-900 flex items-center mt-[-22.6px]" />
-              <button
-                type="button"
-                title="การแจ้งเตือน"
-                className="text-zinc-600 hover:text-black p-1 transition-colors cursor-pointer mt-[-22.6px]"
-              >
-                <Bell className="size-6" />
-              </button>
+              <NotificationBell />
             </div>
           </div>
 
