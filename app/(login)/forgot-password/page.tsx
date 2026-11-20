@@ -76,16 +76,20 @@ const verifyOtpCode = async (code: string) => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, otp: code }),
       });
-      const data = await res.json();
+      const data = (await res.json()) as {
+        success?: boolean;
+        resetToken?: string;
+        message?: string;
+      };
       if (data.success) {
         // บันทึก resetToken ที่ได้รับเพื่อส่งต่อไปยัง reset-password
         setResetToken(data.resetToken || "");
         setStep(3); // ไปหน้ากรอกรหัสผ่านใหม่
       } else {
-        setErrorMsg(data.message || " rhats OTP ไม่ถูกต้อง");
+        setErrorMsg(data.message || "รหัส OTP ไม่ถูกต้อง");
       }
     } catch {
-      setErrorMsg("เกิดข้อผิดผิดในการตรวจสอบ OTP");
+      setErrorMsg("เกิดข้อผิดพลาดในการตรวจสอบ OTP");
     } finally {
       setIsLoading(false);
     }
@@ -123,15 +127,18 @@ const handleResetPassword = async (e: React.FormEvent) => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, resetToken, newPassword }),
       });
-      const data = await res.json();
+      const data = (await res.json()) as {
+        success?: boolean;
+        message?: string;
+      };
       if (data.success) {
-        alert("เปลี่ยน rhats ผ่านสำเร็จ กรุณาเข้าสู่ระบบใหม่");
+        alert("เปลี่ยนรหัสผ่านสำเร็จ กรุณาเข้าสู่ระบบใหม่");
         router.push("/login");
       } else {
-        setErrorMsg(data.message || "เปลี่ยน rhats ผ่านไม่สำเร็จ");
+        setErrorMsg(data.message || "เปลี่ยนรหัสผ่านไม่สำเร็จ");
       }
     } catch {
-      setErrorMsg("เกิดข้อผิดผิดที่เซิร์ฟเวอร์");
+      setErrorMsg("เกิดข้อผิดพลาดที่เซิร์ฟเวอร์");
     } finally {
       setIsLoading(false);
     }

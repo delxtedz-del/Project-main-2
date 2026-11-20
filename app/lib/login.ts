@@ -3,7 +3,7 @@ const ITER = 100000;
 const toB64 = (buf: ArrayBuffer | Uint8Array) =>
   Buffer.from(buf instanceof Uint8Array ? buf : new Uint8Array(buf)).toString("base64");
 
-async function derive(password: string, salt: Uint8Array) {
+async function derive(password: string, salt: Uint8Array<ArrayBuffer>) {
   const key = await crypto.subtle.importKey(
     "raw",
     new TextEncoder().encode(password),
@@ -26,6 +26,6 @@ export async function hashPassword(password: string): Promise<string> {
 export async function verifyPassword(password: string, stored: string): Promise<boolean> {
   const [saltB64, hashB64] = stored.split(":");
   if (!saltB64 || !hashB64) return false;
-  const salt = new Uint8Array(Buffer.from(saltB64, "base64"));
+  const salt = Uint8Array.from(Buffer.from(saltB64, "base64"));
   return toB64(await derive(password, salt)) === hashB64;
 }

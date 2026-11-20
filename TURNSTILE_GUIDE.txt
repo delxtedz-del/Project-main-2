@@ -1,0 +1,117 @@
+================================================================================
+คู่มือสรุป: Cloudflare Turnstile + ระบบ Login + .env.local (ฉบับคนเรียนเฉพาะหน้าบ้าน)
+================================================================================
+
+1. ภาพรวม: ทำไมต้องมีทั้ง "หน้าบ้าน" และ "หลังบ้าน" (app/api)?
+--------------------------------------------------------------------------------
+เวลาทำระบบกันบอท (Cloudflare Turnstile) จะมีกุญแจอยู่ 2 ดอก:
+
+  (A) Site Key (กุญแจหน้าบ้าน) -> ใส่ใน .env.local ชื่อ NEXT_PUBLIC_TURNSTILE_SITE_KEY
+      - ทำหน้าที่: แสดงกล่อง "ยืนยันว่าคุณไม่ใช่บอท" บนหน้าเว็บ
+      - ใครเห็นได้บ้าง: ทุกคนที่เปิดเว็บเห็นได้หมด (ขึ้นต้นด้วย NEXT_PUBLIC_ เพื่อให้
+        เบราว์เซอร์อ่านค่าได้)
+      - เมื่อผู้ใช้ติ๊กผ่าน กล่องนี้จะสร้าง "Token" (รหัสชั่วคราว) ส่งให้หน้าบ้าน
+
+  (B) Secret Key (กุญแจหลังบ้าน) -> ใส่ใน .env.local ชื่อ TURNSTILE_SECRET_KEY
+      - ทำหน้าที่: เอา Token ที่หน้าบ้านได้มา ส่งไปถามเซิร์ฟเวอร์ของ Cloudflare จริงๆ ว่า
+        "Token นี้ของแท้ไหม หรือมีคนแอบปลอม/กดข้าม?"
+      - ทำไมต้องอยู่หลังบ้าน (app/api/verify-turnstile/route.ts)?
+        เพราะถ้าเอา Secret Key มาไว้หน้าบ้าน คนกด F12 (Inspect) จะขโมยไปใช้ได้เลย!
+        และใน Next.js โฟลเดอร์ `app/api/...` จะรันบน Server เท่านั้น เบราว์เซอร์มองไม่เห็น
+
+สรุปสั้นๆ:
+  หน้าบ้าน (app/login/page.tsx)
+    -> ใช้ TurnstileWidget + Site Key -> ได้ token
+    -> ส่ง token ไปหลังบ้าน (/api/verify-turnstile)
+  หลังบ้าน (app/api/verify-turnstile/route.ts)
+    -> ใช้ Secret Key + token ยิงไปเช็กกับ Cloudflare
+    -> ตอบกลับมาว่า { success: true } หรือ false
+  หน้าบ้าน
+    -> ถ้าผ่าน ค่อยเรียกฟังก์ชัน login(email, password) จาก data/Login.ts
+
+
+2. สิ่งที่ต้องไปสร้างในไฟล์ .env.local (วางไว้ที่ root โปรเจกต์ ข้างๆ package.json)
+--------------------------------------------------------------------------------
+สร้างไฟล์ชื่อ `.env.local` แล้วใส่ค่าตามนี้ (เอา Key จริงของคุณมาแทนที่ข้อความหลังเครื่องหมาย =):
+
+  # --- 1) Cloudflare Turnstile (จำเป็นสำหรับหน้า Login) ---
+  NEXT_PUBLIC_TURNSTILE_SITE_KEY=ใส่_Site_Key_ของคุณตรงนี้
+  TURNSTILE_SECRET_KEY=ใส่_Secret_Key_ของคุณตรงนี้
+
+  # --- 2) ระบบส่ง OTP ลืมรหัสผ่าน (จำเป็นเฉพาะตอนกด "ลืมรหัสผ่าน") ---
+  # ใช้ Gmail + App Password (รหัส 16 หลักจาก Google Account > Security > App passwords)
+  GMAIL_USER=your-email@gmail.com
+  GMAIL_APP_PASSWORD=xxxx xxxx xxxx xxxx
+
+  # --- 3) Secret สำหรับเซ็น resetToken (ไม่ใส่ก็ได้ มีค่าสำรองอยู่แล้ว) ---
+  AUTH_RESET_SECRET=random-secret-string-anything
+
+หมายเหตุสำคัญ:
+  - แก้ไฟล์ `.env.local` เสร็จแล้ว ต้องปิดเซิร์ฟเวอร์ (Ctrl+C) แล้วรัน `npm run dev` ใหม่
+    Next.js ถึงจะโหลดค่าใหม่เข้าไป
+  - ห้ามอัปโหลด `.env.local` ขึ้น GitHub (ใน `.gitignore` จะกันไว้อยู่แล้ว)
+
+
+3. แต่ละไฟล์ทำอะไร? ทำไมต้องมี? และแบบใหม่ดีกว่ายังไง?
+--------------------------------------------------------------------------------
+
+[1] components/TurnstileWidget.tsx (คอมโพเนนต์ที่แยกออกมาใหม่)
+  - ทำอะไร:
+    โหลดสคริปต์ของ Cloudflare Turnstile ผ่าน <Script> ของ Next.js แล้ววาดกล่อง
+    ยืนยันตัวตนลงใน <div> พร้อมจัดการ callback เมื่อผ่าน (onVerify), หมดอายุ (onExpire),
+    เกิด error (onError) และรีเซ็ตกล่องได้ผ่าน prop `resetKey`
+  - ทำไมต้องแยกเป็นคอมโพเนนต์ & ดีกว่าแบบเดิมยังไง:
+    1) หน้า app/login/page.tsx ไม่รก โค้ดอ่านง่าย แยกหน้าที่ชัดเจน (UI ฟอร์ม vs ตัวกันบอท)
+    2) เอาไป import ใช้ซ้ำได้หลายหน้า เช่น หน้า /register หรือ /forgot-password
+       โดยไม่ต้องก๊อปปี้โค้ด <Script> และ window.turnstile ไปแปะซ้ำ
+    3) ใช้ Script ของ Cloudflare โดยตรง (ตามโค้ดที่คุณเอามา) ควบคุมการ render/reset/remove
+       ได้ตรงๆ และไม่ผูกติดกับไลบรารีเสริมเวลาอัปเกรด React/Next.js
+
+[2] app/login/page.tsx (หน้าเข้าสู่ระบบ)
+  - ทำอะไร:
+    แสดงฟอร์มกรอก Email / Password + เรียกใช้ <TurnstileWidget />
+    พอกด "เข้าสู่ระบบ":
+      1) เช็กว่าได้ token จาก Turnstile หรือยัง (ถ้าตั้งค่า Site Key ไว้)
+      2) ส่ง token ไปตรวจที่ `/api/verify-turnstile`
+      3) ถ้าผ่าน ค่อยเรียก `login(email, password)` จาก `data/Login.ts`
+      4) เก็บ credential ลง localStorage แล้วพาไปหน้าหลัก `/`
+      5) ถ้าพลาด จะเพิ่มค่า `turnstileResetKey` เพื่อรีเซ็ตกล่อง Turnstile ให้กดใหม่ได้
+  - สิ่งที่แก้ให้แล้ว:
+    - ลบ `app/logincopy/page.tsx` ที่เพื่อนทำซ้ำไว้ทิ้ง (เหลือ `app/login/page.tsx` อันเดียว)
+    - เปลี่ยนมา import `TurnstileWidget` จาก `@/components/TurnstileWidget`
+    - แก้เงื่อนไขปุ่มกดไม่ให้ค้าง disabled ถ้ายังไม่ได้ใส่ Site Key ใน `.env.local`
+    - แก้คำผิดภาษาไทย (เช่น `rhats` -> `รหัส`, `ตัว_form` -> `ตัวตน`)
+
+[3] app/api/verify-turnstile/route.ts (หลังบ้านตรวจ Turnstile)
+  - ทำอะไร:
+    รับ `{ token }` จากหน้าบ้าน แล้วเอาไปยิงเช็กกับ
+    `https://challenges.cloudflare.com/turnstile/v0/siteverify` โดยแนบ `TURNSTILE_SECRET_KEY`
+  - ทำไมต้องมี:
+    ป้องกันคนใช้ Postman หรือแก้โค้ดหน้าบ้านแอบยิงเข้ามาโดยไม่ผ่าน Cloudflare จริง
+  - สิ่งที่แก้ให้แล้ว:
+    - เติม TypeScript type ให้ `request.json()` และ `result.json()` ไม่ให้ขึ้น error `unknown`
+
+[4] app/api/auth/request-otp/route.ts, verify-otp/route.ts, reset-password/route.ts
+  - ทำอะไร:
+    เป็น API หลังบ้านสำหรับหน้า `/forgot-password` (ส่ง OTP เข้าอีเมล -> ตรวจ OTP ->
+    ออก resetToken -> ตั้งรหัสผ่านใหม่)
+  - สิ่งที่แก้ให้แล้ว:
+    - เติม TypeScript type ให้ `request.json()` และ response JSON ในทุกไฟล์
+    - แก้ TypeScript error ใน `app/forgot-password/page.tsx` และ `app/lib/login.ts`
+
+[5] data/Login.ts (ฐานข้อมูลจำลองฝั่งหน้าบ้าน)
+  - ทำอะไร:
+    เก็บรายชื่อพนักงานจำลอง (รหัสผ่านเริ่มต้นคือ `Pass`) และฟังก์ชัน `login()` ที่จำลอง
+    ดีเลย์ 1-3 วินาที (มีสุ่ม 20% ให้ขึ้น connection refused เพื่อทดสอบ error handling)
+
+
+4. ถ้ายังมี error แดงเรื่อง `nodemailer` หรือ `@opennextjs/cloudflare`
+--------------------------------------------------------------------------------
+ในไฟล์ package.json เพื่อนใส่ชื่อแพ็กเกจ `nodemailer` และ `@opennextjs/cloudflare` ไว้แล้ว
+แต่ในโฟลเดอร์ `node_modules` ยังไม่มีไฟล์ (ยังไม่ได้รันติดตั้ง)
+ให้เปิด Terminal ในโปรเจกต์แล้วรันคำสั่ง:
+
+  npm install
+
+หลังจากรันเสร็จ TypeScript error ที่บอกว่าหา module ไม่เจอจะหายไปทั้งหมดครับ
+================================================================================

@@ -19,7 +19,10 @@ const otpStore = g.__otpStore;
 
 export async function POST(request: Request) {
   try {
-    const body = await request.json();
+    const body = (await request.json()) as {
+      email?: unknown;
+      turnstileToken?: unknown;
+    };
     const email =
       typeof body?.email === "string" ? body.email.trim().toLowerCase() : "";
     const turnstileToken =
@@ -46,7 +49,7 @@ export async function POST(request: Request) {
           headers: { "Content-Type": "application/x-www-form-urlencoded" },
         }
       );
-      const outcome = await verifyRes.json();
+      const outcome = (await verifyRes.json()) as { success?: boolean };
       if (!outcome.success) {
         return NextResponse.json(
           { success: false, message: "ยืนยัน Cloudflare Turnstile ไม่สำเร็จ" },

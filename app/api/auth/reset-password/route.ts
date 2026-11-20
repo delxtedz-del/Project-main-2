@@ -36,7 +36,11 @@ function verifyResetToken(token: string, expectedEmail: string): boolean {
 
 export async function POST(request: Request) {
   try {
-    const body = await request.json();
+    const body = (await request.json()) as {
+      email?: unknown;
+      resetToken?: unknown;
+      newPassword?: unknown;
+    };
     const email =
       typeof body?.email === "string" ? body.email.trim().toLowerCase() : "";
     const resetToken =
