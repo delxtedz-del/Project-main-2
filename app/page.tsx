@@ -1,4 +1,4 @@
-import EmployeesPage from "./employees/page";
+import EmployeesPage from "./(human_resouce)/employees/page";
 
 export default function Home() {
   return <EmployeesPage />;
