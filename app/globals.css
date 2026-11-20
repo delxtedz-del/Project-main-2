@@ -36,8 +36,13 @@
   --color-white-70: #ffffffb3;
   --color-white-60: #ffffff99;
 
-  /* Green */
+  /* Green & Brand */
   --color-anyprimary-green-700 : #105647;
+  --color-brand-900: #10231f;
+  --color-brand-800: #143d34;
+  --color-brand-700: #105647;
+  --color-brand-600: #2a5a4e;
+  --color-line: #e5e7eb;
 
   /* Context Color */
   --color-error-500: #ef4444;
