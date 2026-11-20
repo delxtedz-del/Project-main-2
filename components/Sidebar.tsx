@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
@@ -10,26 +10,40 @@ import {
   HeartHandshake,
   CreditCard,
   LogOut,
+  ArrowRightLeft,
+  FileText,
+  CalendarDays,
+  BarChart3,
 } from "lucide-react";
+
+type MenuCategory = "HR" | "FIN" | "EMP" | "IT";
 
 interface MenuItem {
   name: string;
   href: string;
   icon: React.ComponentType<{ className?: string }>;
   matchHrefs?: string[];
+  category: MenuCategory;
 }
 
 const menuItems: MenuItem[] = [
-  { name: "ภาพรวม", href: "/dashboard", icon: LayoutGrid },
-  { name: "พนักงาน", href: "/", icon: User, matchHrefs: ["/", "/employees"] },
-  { name: "พนักงานเก่า", href: "/oldemployee", icon: UserMinus, matchHrefs: ["/oldemployee"] },
-  { name: "จัดการสวัสดิการ", href: "/benefits", icon: HeartHandshake, matchHrefs: ["/benefits"] },
-  {
-    name: "การเงินและบัญชี",
-    href: "/finance",
-    icon: CreditCard,
-    matchHrefs: ["/finance", "/transfers", "/requests", "/pay-cycles", "/reports"],
-  },
+  // ฝ่ายบุคคล
+  { name: "ภาพรวม", href: "/dashboard", icon: LayoutGrid, category: "HR" },
+  { name: "พนักงาน", href: "/", icon: User, matchHrefs: ["/", "/employees"], category: "HR" },
+  { name: "พนักงานเก่า", href: "/oldemployee", icon: UserMinus, matchHrefs: ["/oldemployee"], category: "HR" },
+  { name: "จัดการสวัสดิการ", href: "/benefits", icon: HeartHandshake, matchHrefs: ["/benefits"], category: "HR" },
+  // ฝ่ายการเงิน
+  { name: "การเงินและบัญชี", href: "/finance", icon: CreditCard, matchHrefs: ["/finance"], category: "FIN" },
+  { name: "รายการโอนเงิน", href: "/transfers", icon: ArrowRightLeft, matchHrefs: ["/transfers"], category: "FIN" },
+  { name: "คำขอจ่ายเงิน", href: "/requests", icon: FileText, matchHrefs: ["/requests"], category: "FIN" },
+  { name: "รอบการจ่ายเงิน", href: "/pay-cycles", icon: CalendarDays, matchHrefs: ["/pay-cycles"], category: "FIN" },
+  { name: "รายงาน", href: "/reports", icon: BarChart3, matchHrefs: ["/reports"], category: "FIN" },
+  // ฝ่ายพนักงาน
+  { name: "ภาพรวมพนักงาน", href: "/dashboard", icon: CreditCard, matchHrefs: ["/finance"], category: "EMP" },
+  { name: "การเบิกสวัสดีการ", href: "/claim", icon: CreditCard, matchHrefs: ["/transfers"], category: "EMP" },
+  { name: "ประวัติการเบิกสวัสดีการ", href: "/history", icon: CreditCard, matchHrefs: ["/requests"], category: "EMP" },
+  { name: "ข้อมูลส่วนตัว", href: "/finance", icon: CreditCard, matchHrefs: ["/requests"], category: "EMP" },
+  // ฝ่าย IT (ยังไม่เอามาใส่)
 ];
 
 export interface SidebarProps {
@@ -44,18 +58,81 @@ export interface SidebarProps {
 export default function Sidebar({ user, onLogout }: SidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
+  const [storedUser, setStoredUser] = useState<{
+    empCode?: string;
+    role?: string;
+  } | null>(null);
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem("credential");
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        setStoredUser({
+          empCode: parsed?.empCode,
+          role: parsed?.role,
+        });
+      } else {
+        setStoredUser(null);
+      }
+    } catch {
+      setStoredUser(null);
+    }
+  }, [pathname]);
 
   if (pathname === "/login" || pathname === "/register") {
     return null;
   }
 
+  const normalizedRole = (user?.role || storedUser?.role || "HR")
+    .trim()
+    .toUpperCase();
+
   const currentUser = {
-    name: user?.name || "นาย ปฏิพัทธ์ สร้างตั้น",
-    role: user?.role || "HR",
-    avatarUrl:
+    name: user?.name || storedUser?.empCode || "นาย ปฏิพัทธ์ สร้างตั้น",
+    role: normalizedRole,
+    avatarUrl: 
       user?.avatarUrl ||
       "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80",
   };
+
+  const renderMenuItem = (item: MenuItem) => {
+    const Icon = item.icon;
+    const isActive = item.matchHrefs
+      ? item.matchHrefs.includes(pathname)
+      : pathname === item.href;
+
+    return (
+      <Link
+        key={`${item.category}-${item.name}`}
+        href={item.href}
+        className={`w-full h-11 px-4 flex items-center justify-between rounded-[20px] transition-all text-base shrink-0 ${
+          isActive
+            ? "bg-zinc-900/5 text-zinc-900 font-medium"
+            : "text-zinc-600 hover:text-zinc-900 hover:bg-zinc-900/5 font-normal"
+        }`}
+      >
+        <span>{item.name}</span>
+        <Icon
+          className={`size-4.5 ${
+            isActive ? "text-zinc-900" : "text-zinc-500"
+          }`}
+        />
+      </Link>
+    );
+  };
+
+  const roleSectionCategory: MenuCategory | null =
+    currentUser.role === "HR"
+      ? "HR"
+      : currentUser.role === "FIN"
+        ? "FIN"
+        : null;
+
+  const roleMenuItems = roleSectionCategory
+    ? menuItems.filter((item) => item.category === roleSectionCategory)
+    : [];
+  const empMenuItems = menuItems.filter((item) => item.category === "EMP");
 
   const handleLogout = () => {
     if (onLogout) {
@@ -120,31 +197,11 @@ export default function Sidebar({ user, onLogout }: SidebarProps) {
 
         {/* รายการเมนูหลัก */}
         <nav className="flex flex-col gap-2">
-          {menuItems.map((item) => {
-            const Icon = item.icon;
-            const isActive = item.matchHrefs
-              ? item.matchHrefs.includes(pathname)
-              : pathname === item.href;
-
-            return (
-              <Link
-                key={item.name}
-                href={item.href}
-                className={`w-full h-11 px-4 flex items-center justify-between rounded-[20px] transition-all text-base ${
-                  isActive
-                    ? "bg-zinc-900/5 text-zinc-900 font-medium"
-                    : "text-zinc-600 hover:text-zinc-900 hover:bg-zinc-900/5 font-normal"
-                }`}
-              >
-                <span>{item.name}</span>
-                <Icon
-                  className={`size-4.5 ${
-                    isActive ? "text-zinc-900" : "text-zinc-500"
-                  }`}
-                />
-              </Link>
-            );
-          })}
+          {roleMenuItems.map(renderMenuItem)}
+          {roleMenuItems.length > 0 && (
+            <div className="my-2 mx-4 h-px bg-zinc-200 shrink-0" />
+          )}
+          {empMenuItems.map(renderMenuItem)}
         </nav>
       </div>
 

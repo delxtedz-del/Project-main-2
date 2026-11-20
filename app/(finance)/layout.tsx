@@ -4,23 +4,6 @@ import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Clock from "@/components/Clock";
-import {
-  LayoutDashboard,
-  ArrowRightLeft,
-  FileText,
-  CalendarDays,
-  BarChart3,
-  HeartHandshake,
-} from "lucide-react";
-
-const financeTabs = [
-  { name: "แดชบอร์ดการเงิน", href: "/finance", icon: LayoutDashboard },
-  { name: "รายการโอนเงิน", href: "/transfers", icon: ArrowRightLeft },
-  { name: "คำขอจ่ายเงิน", href: "/requests", icon: FileText },
-  { name: "รอบการจ่ายเงิน", href: "/pay-cycles", icon: CalendarDays },
-  { name: "รายงาน", href: "/reports", icon: BarChart3 },
-  { name: "จัดการสวัสดิการ", href: "/benefits", icon: HeartHandshake },
-];
 
 export default function FinanceLayout({
   children,
@@ -48,29 +31,6 @@ export default function FinanceLayout({
         <div className="self-start sm:self-auto">
           <Clock />
         </div>
-      </div>
-
-      {/* Sub Navigation Tabs */}
-      <div className="bg-white rounded-2xl p-1.5 shadow-xs border border-gray-200 flex items-center gap-1 overflow-x-auto">
-        {financeTabs.map((tab) => {
-          const Icon = tab.icon;
-          const isActive = pathname === tab.href;
-
-          return (
-            <Link
-              key={tab.href}
-              href={tab.href}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-medium transition-all whitespace-nowrap cursor-pointer ${
-                isActive
-                  ? "bg-[#105647] text-white shadow-xs"
-                  : "text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100/80"
-              }`}
-            >
-              <Icon className={`w-4 h-4 ${isActive ? "text-emerald-200" : "text-zinc-500"}`} />
-              <span>{tab.name}</span>
-            </Link>
-          );
-        })}
       </div>
 
       {/* Page Content */}
