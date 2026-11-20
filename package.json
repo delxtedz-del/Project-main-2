@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@internationalized/date": "^3.12.4",
+    "@better-auth/infra": "^0.4.31",
     "@marsidev/react-turnstile": "^1.6.3",
     "@tailgrids/icons": "^2.0.1",
     "class-variance-authority": "^0.7.1",

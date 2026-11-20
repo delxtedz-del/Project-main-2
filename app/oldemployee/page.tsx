@@ -37,15 +37,15 @@ export default function OldEmployeePage() {
       </div>
 
       {/* แถบค้นหา */}
-      <div className="mb-6">
-        <div className="relative max-w-md">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 size-4 text-zinc-400" />
+      <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-8 ">
+        <div className="w-full max-w-[792px] h-11 px-2 flex items-center gap-2.5">
+           <Search className="size-5 text-teal-900 shrink-0" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="ค้นหาพนักงานเก่า..."
-            className="w-full bg-white border border-zinc-200 rounded-2xl pl-10 pr-4 py-2 text-xs text-zinc-700 placeholder-zinc-400 outline-none focus:ring-1 focus:ring-teal-800 transition"
+            className="w-full bg-transparent text-lg font-normal text-zinc-800 placeholder-zinc-500 outline-none"
           />
         </div>
       </div>

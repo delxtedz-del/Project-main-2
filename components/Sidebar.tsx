@@ -38,6 +38,10 @@ export default function Sidebar({ user, onLogout }: SidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
 
+  if (pathname === "/login" || pathname === "/register") {
+    return null;
+  }
+
   const currentUser = {
     name: user?.name || "นาย ปฏิพัทธ์ สร้างตั้น",
     role: user?.role || "HR",
