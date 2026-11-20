@@ -8,6 +8,7 @@ import {
   User,
   UserMinus,
   HeartHandshake,
+  CreditCard,
   LogOut,
 } from "lucide-react";
 
@@ -22,7 +23,13 @@ const menuItems: MenuItem[] = [
   { name: "ภาพรวม", href: "/dashboard", icon: LayoutGrid },
   { name: "พนักงาน", href: "/", icon: User, matchHrefs: ["/", "/employees"] },
   { name: "พนักงานเก่า", href: "/oldemployee", icon: UserMinus, matchHrefs: ["/oldemployee"] },
-  { name: "จัดการสวัสดิการ", href: "/benefits", icon: HeartHandshake },
+  { name: "จัดการสวัสดิการ", href: "/benefits", icon: HeartHandshake, matchHrefs: ["/benefits"] },
+  {
+    name: "การเงินและบัญชี",
+    href: "/finance",
+    icon: CreditCard,
+    matchHrefs: ["/finance", "/transfers", "/requests", "/pay-cycles", "/reports"],
+  },
 ];
 
 export interface SidebarProps {

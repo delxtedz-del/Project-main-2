@@ -32,6 +32,13 @@
 | `app/(employee)/dashboard/page.tsx` | `/dashboard` | หน้าภาพรวมสวัสดิการของพนักงาน แสดงรอบบิลปัจจุบัน, ตารางรายการรอเบิก 2 รายการล่าสุด, ตัวเลือกปีงบประมาณ และแถบ Progress Bar แสดงโควตาสวัสดิการคงเหลือแยกตาม 4 หมวดหมู่ |
 | `app/(employee)/claim/page.tsx` | `/claim` | หน้าแบบฟอร์มยื่นขอเบิกสวัสดิการแบบไดนามิก (เปลี่ยนฟิลด์ตามประเภทสวัสดิการ 11 ชนิด, คำนวณโควตาคงเหลือ, แนบไฟล์, บันทึกร่างอัตโนมัติ, หัวหน้าเบิกแทนลูกน้อง และแสดงหน้าติดตามสถานะหลังส่งสำเร็จ) |
 | `app/(employee)/historyclaim/page.tsx` | `/historyclaim` | หน้าประวัติการเบิกสวัสดิการทั้งหมดของพนักงาน รองรับการรับค่าตัวกรองสถานะเริ่มต้นจาก URL Query (`?status=...`) |
+| `app/(finance)/layout.tsx` | (Finance Layout) | แถบนำทางด้านบนของโมดูลการเงิน พร้อม `<Clock />` และแท็บสลับหน้าระหว่าง แดชบอร์ด, รายการโอน, คำขอจ่ายเงิน, รอบจ่ายเงิน, รายงาน และสวัสดิการ |
+| `app/(finance)/finance/page.tsx` | `/finance` | แดชบอร์ดภาพรวมการเงิน (ยอดสุทธิ, รอตรวจสอบ, ภาษี WHT, กราฟ BarChart รายเดือน, ตาราง 5 รายการล่าสุด) |
+| `app/(finance)/transfers/page.tsx` | `/transfers` | ระบบรายการโอนเงิน (ค้นหา, กรองสถานะ, Modal บันทึกรายการโอนเงิน, และปุ่มสลับสถานะรอตรวจ/อนุมัติแล้ว) |
+| `app/(finance)/requests/page.tsx` | `/requests` | รายการคำขอจ่ายเงินพนักงานที่เชื่อมโยงข้อมูลคำขอเบิกสวัสดิการสดๆ จาก `data/benefit.ts` ร่วมกับคำขอจ่ายเงินทั่วไป |
+| `app/(finance)/pay-cycles/page.tsx` | `/pay-cycles` | หน้ากำหนดรอบตัดรอบ (วันที่ 20, 25, 28) และวันจ่ายเงิน (วันที่ 28, 30, สิ้นเดือน) บันทึกลง `localStorage` |
+| `app/(finance)/reports/page.tsx` | `/reports` | สรุปรายงานการเงินตามช่องทางชำระเงิน กราฟเปรียบเทียบ พร้อมปุ่ม ส่งออกรายงาน CSV และนำเข้าข้อมูล CSV |
+| `app/(finance)/benefits/page.tsx` | `/benefits` | หน้าจัดการสวัสดิการและการเบิกจ่าย (รองรับปุ่มเมนู `/benefits` ใน Sidebar) ติดตามสถานะคำขอเบิกสวัสดิการทั้งหมด |
 
 ### 1.3 คอมโพเนนต์ส่วนกลางและระบบเบิกสวัสดิการ (โฟลเดอร์ `components/`)
 | ไฟล์ | หน้าที่และจุดประสงค์ |
@@ -49,6 +56,7 @@
 | `components/claim/ClaimTrackingView.tsx` | หน้าแสดงผลหลังส่งคำขอเบิกสำเร็จ แสดง Timeline 4 ขั้นตอน, รายการเอกสารตัวจริงที่ต้องนำส่ง HR ภายในวันที่ 20 และปุ่มยกเลิกคำขอ |
 | `components/claim/DatePickerField.tsx` | ช่องเลือกวันที่แบบ Popover ปฏิทินภาษาไทย คืนค่าเป็น ISO (`YYYY-MM-DD`) แต่แสดงผลบนปุ่มเป็นปี พ.ศ. (`DD/MM/BBBB`) |
 | `components/claim/SearchableCheckboxFilter.tsx` | ปุ่ม Dropdown ตัวกรองแบบเลือกได้หลายค่า (Multi-select Checkbox) พร้อมช่องค้นหาภายในรายการ |
+| `components/TableTransfers.tsx` | ตารางแสดงรายการโอนเงินในโมดูลการเงิน พร้อมปุ่มสลับสถานะ (รอตรวจสอบ / อนุมัติแล้ว) และแสดงช่องทางการโอน |
 
 ### 1.4 คอมโพเนนต์ UI พื้นฐานจาก TailGrids (โฟลเดอร์ `components/tailgrids/core/`)
 | ไฟล์ | หน้าที่และจุดประสงค์ |
@@ -77,7 +85,7 @@
 | `data/employees.ts` | ข้อมูลพนักงานจำลองสำหรับหน้าทำเนียบพนักงาน HR จำนวน 15 คน (`mockEmployeesData`) พร้อมรูปภาพ Unsplash, โปรเจกต์ และฟังก์ชันแปลงข้อมูลเข้าการ์ด (`toEmployeeCardProps`) |
 | `data/Login.ts` | ข้อมูลบัญชีผู้ใช้ 35 บัญชี (`users` รหัสผ่านเริ่มต้น `"Pass"`) และฟังก์ชันจำลองการเข้า/ออกจากระบบ (`login`, `logout`) |
 | `data/hr.ts` | กำหนด TypeScript Interfaces สำหรับโมดูล HR (`EmployeeCardItem`, `FormerEmployeeItem`, `ProjectItem`, `BenefitItem`, `HrNavTab`) |
-| `data/finance.ts` | กำหนด TypeScript Interfaces สำหรับโมดูลการเงินในอนาคต (`TransferItem`, `PaymentRequestItem`, `ChannelReportItem`, `NavTab`) |
+| `data/finance.ts` | โมดูลข้อมูลการเงินและบัญชี (`TransferItem`, `PaymentRequestItem`, `ChannelReportItem`, `PayCycleSettings`, `NavTab`) พร้อมฟังก์ชันเชื่อมต่อคำขอเบิกสวัสดิการจาก `data/benefit.ts` (`getLivePaymentRequests`), ฟังก์ชันจัดการรายการโอน (`getLiveTransfers`, `toggleTransferStatus`, `addTransfer`), การตั้งค่ารอบจ่ายเงิน (`getPayCycleSettings`, `savePayCycleSettings`) และรายงาน (`getLiveChannelReports`, `saveChannelReports`) ซิงก์กับ `localStorage` |
 | `utils/cn.ts` | ฟังก์ชัน `cn(...inputs)` รวมคลาส Tailwind CSS ด้วย `clsx` และ `tailwind-merge` |
 | `utils/login.ts` | ไฟล์ว่าง (`export {}`) สำรองไว้สำหรับฟังก์ชันช่วยเหลืองาน Authentication |
 
