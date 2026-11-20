@@ -15,7 +15,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex h-screen overflow-hidden">
       <Sidebar />
-      <main className="flex-1 overflow-y-auto [scrollbar-gutter:stable]">{children}</main>
+      <main className="flex-1 w-full min-w-0 overflow-y-auto [scrollbar-gutter:stable]">{children}</main>
     </div>
   );
 }

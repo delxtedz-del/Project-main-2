@@ -138,11 +138,11 @@ export default function DashboardHrPage() {
   }, [filteredClaims, currentPage, pageSize]);
 
   return (
-    <div className="p-8 md:p-10 max-w-[1440px] mx-auto min-h-screen">
+    <div className="w-full p-8 md:p-10 max-w-[1440px] mx-auto min-h-screen">
       {/* 1. ส่วนหัว: หัวข้อหน้า และ วันที่/กระดิ่งแจ้งเตือน */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+      <div className="w-full flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-6">
         <div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 h-9">
             <h1 className="text-2xl font-medium leading-9 tracking-[0.031em] text-[#0b1e1b]">
               ภาพรวม
             </h1>
@@ -154,8 +154,8 @@ export default function DashboardHrPage() {
         </div>
 
         {/* วันที่ และ กระดิ่งแจ้งเตือน */}
-        <div className="flex items-center gap-3 self-end sm:self-auto text-[#0b1e1b]">
-          <Clock className="text-base font-medium leading-6 tracking-wide text-zinc-900 flex items-center mt-[-22.6px]" />
+        <div className="flex items-center gap-3 h-9 self-end sm:self-auto text-[#0b1e1b]">
+          <Clock className="text-base font-medium leading-9 tracking-wide text-zinc-900 flex items-center" />
           <NotificationBell />
         </div>
       </div>
