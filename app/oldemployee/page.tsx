@@ -8,7 +8,7 @@ export default function OldEmployeePage() {
   const [searchQuery, setSearchQuery] = useState("");
 
   return (
-    <div className="p-8 md:p-10 max-w-[1440px] mx-auto min-h-screen">
+    <div className="p-8 md:p-10 max-w-360 mx-auto min-h-screen">
       {/* ส่วนหัว: หัวข้อหน้า และ วันที่/การแจ้งเตือน */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div>
@@ -38,7 +38,7 @@ export default function OldEmployeePage() {
 
       {/* แถบค้นหา */}
       <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-8 ">
-        <div className="w-full max-w-[792px] h-11 px-2 flex items-center gap-2.5">
+        <div className="w-full max-w-198 h-11 px-2 flex items-center gap-2.5">
            <Search className="size-5 text-teal-900 shrink-0" />
           <input
             type="text"
@@ -51,7 +51,7 @@ export default function OldEmployeePage() {
       </div>
 
       {/* กล่องแสดงข้อมูล */}
-      <div className="bg-white rounded-3xl border border-zinc-200/80 p-8 shadow-sm flex flex-col items-center justify-center min-h-[300px] text-center">
+      <div className="bg-white rounded-3xl border border-zinc-200/80 p-8 shadow-sm flex flex-col items-center justify-center min-h-75 text-center">
         <div className="size-16 rounded-full bg-zinc-100 flex items-center justify-center text-zinc-400 mb-3">
           <UserMinus className="size-8" />
         </div>

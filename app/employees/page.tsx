@@ -146,7 +146,7 @@ export default function EmployeesPage() {
   };
 
   return (
-    <div className="p-8 md:p-10 max-w-[1440px] mx-auto min-h-screen">
+    <div className="p-8 md:p-10 max-w-360 mx-auto min-h-screen">
       {selectedEmployee ? (
         /* --- Modal 1: ดูรายละเอียดพนักงานฉบับเต็ม ตาม Figma --- */
         <div>
@@ -329,7 +329,7 @@ export default function EmployeesPage() {
                   onClick={() => setActiveDetailTab("personal")}
                   className={`px-4 py-1.5 rounded-full text-xs transition cursor-pointer ${
                     activeDetailTab === "personal"
-                      ? "bg-[#d1f2dc] text-[#105647] font-thin"
+                      ? "bg-[#d1f2dc] text-anyprimary-green-700y-green-700 font-thin"
                       : "text-zinc-400 hover:text-zinc-600"
                   }`}
                 >
@@ -340,7 +340,7 @@ export default function EmployeesPage() {
                   onClick={() => setActiveDetailTab("career")}
                   className={`px-4 py-1.5 rounded-full text-xs transition cursor-pointer ${
                     activeDetailTab === "career"
-                      ? "bg-[#d1f2dc] text-[#105647] font-thin"
+                      ? "bg-[#d1f2dc] text-anyprimary-green-700 font-thin"
                       : "text-zinc-400 hover:text-zinc-600"
                   }`}
                 >
@@ -357,7 +357,7 @@ export default function EmployeesPage() {
                       </p>
                       <div className="text-xs font-thin text-[#0b1e1b] mt-1">
                         {selectedEmployee.name}
-                        <div className="w-36 h-[1px] bg-gray-400/5 mt-4"></div>
+                        <div className="w-36 h-px-gray-400/5 mt-4"></div>
                       </div>
                     </div>
                     <div>
@@ -366,7 +366,7 @@ export default function EmployeesPage() {
                       </p>
                       <div className="text-xs font-thin text-[#0b1e1b] mt-1">
                         {selectedEmployee.nickname || "-"}
-                        <div className="w-36 h-[1px] bg-gray-400/5 mt-4"></div>
+                        <div className="w-36 h-px-gray-400/5 mt-4"></div>
                       </div>
                     </div>
                     <div>
@@ -375,7 +375,7 @@ export default function EmployeesPage() {
                       </p>
                       <div className="text-xs font-thin text-[#0b1e1b] mt-1">
                         {selectedEmployee.empCode}
-                        <div className="w-36 h-[1px] bg-gray-400/5 mt-4"></div>
+                        <div className="w-36 h-px-gray-400/5 mt-4"></div>
                       </div>
                     </div>
                     <div>
@@ -384,7 +384,7 @@ export default function EmployeesPage() {
                       </div>
                       <p className="text-xs font-thin text-[#0b1e1b] mt-1">
                         {selectedEmployee.birthDate || "18/02/2001"}
-                        <div className="w-36 h-[1px] bg-gray-400/5 mt-4"></div>
+                        <div className="w-36 h-px bg-gray-400/5 mt-4"></div>
                       </p>
                     </div>
                     <div>
@@ -393,14 +393,14 @@ export default function EmployeesPage() {
                       </p>
                       <div className="text-xs font-thin text-[#0b1e1b] mt-1">
                         {selectedEmployee.phone}
-                        <div className="w-36 h-[1px] bg-gray-400/5 mt-4"></div>
+                        <div className="w-36 h-px bg-gray-400/5 mt-4"></div>
                       </div>
                     </div>
                     <div>
                       <p className="text-xs font-medium text-zinc-900">อีเมล</p>
                       <p className="text-xs font-thin text-[#0b1e1b] mt-1 truncate">
                         {selectedEmployee.email}
-                        <div className="w-36 h-[1px] bg-gray-400/5 mt-4"></div>
+                        <div className="w-36 h-px bg-gray-400/5 mt-4"></div>
                       </p>
                     </div>
                     <div>
@@ -409,7 +409,7 @@ export default function EmployeesPage() {
                       </p>
                       <p className="text-xs font-thin text-[#0b1e1b] mt-1 leading-relaxed">
                         {selectedEmployee.address}
-                        <div className="w-36 h-[1px] bg-gray-400/5 mt-4"></div>
+                        <div className="w-36 h-px bg-gray-400/5 mt-4"></div>
                       </p>
                     </div>
                     <div>
@@ -420,7 +420,7 @@ export default function EmployeesPage() {
                         {selectedEmployee.emergencyContactName
                           ? `${selectedEmployee.emergencyContactName} ${selectedEmployee.emergencyContactPhone ? `(${selectedEmployee.emergencyContactPhone})` : ""}`
                           : selectedEmployee.emergencyContact || "-"}
-                        <div className="w-36 h-[1px] bg-gray-400/5 mt-4"></div>
+                        <div className="w-36 h-px bg-gray-400/5 mt-4"></div>
                       </p>
                     </div>
                   </div>
@@ -432,14 +432,14 @@ export default function EmployeesPage() {
                       </p>
                       <div className="text-xs font-thin text-[#0b1e1b] mt-1">
                         {selectedEmployee.position || "-"}
-                        <div className="w-36 h-[1px] bg-gray-400/5 mt-4"></div>
+                        <div className="w-36 h-px bg-gray-400/5 mt-4"></div>
                       </div>
                     </div>
                     <div>
                       <p className="text-xs font-medium text-zinc-900">แผนก</p>
                       <div className="text-xs font-thin text-[#0b1e1b] mt-1">
                         {selectedEmployee.department || "-"}
-                        <div className="w-36 h-[1px] bg-gray-400/5 mt-4"></div>
+                        <div className="w-36 h-px bg-gray-400/5 mt-4"></div>
                       </div>
                     </div>
                     <div>
@@ -448,7 +448,7 @@ export default function EmployeesPage() {
                       </p>
                       <div className="text-xs font-thin text-[#0b1e1b] mt-1">
                         {selectedEmployee.employmentType || "ประจำ"}
-                        <div className="w-36 h-[1px] bg-gray-400/5 mt-4"></div>
+                        <div className="w-36 h-px bg-gray-400/5 mt-4"></div>
                       </div>
                     </div>
                     <div>
@@ -457,7 +457,7 @@ export default function EmployeesPage() {
                       </p>
                       <div className="text-xs font-thin text-[#0b1e1b] mt-1">
                         {selectedEmployee.startDate || "18/02/2007"}
-                        <div className="w-36 h-[1px] bg-gray-400/5 mt-4"></div>
+                        <div className="w-36 h-px bg-gray-400/5 mt-4"></div>
                       </div>
                     </div>
                     <div>
@@ -466,7 +466,7 @@ export default function EmployeesPage() {
                       </p>
                       <div className="text-xs font-thin text-[#0b1e1b] mt-1">
                         {selectedEmployee.tenure || "2 ปี 2 เดือน"}
-                        <div className="w-36 h-[1px] bg-gray-400/5 mt-4"></div>
+                        <div className="w-36 h-px bg-gray-400/5 mt-4"></div>
                       </div>
                     </div>
                     <div>
@@ -475,7 +475,7 @@ export default function EmployeesPage() {
                         {selectedEmployee.status === "active"
                           ? "ออนไลน์"
                           : selectedEmployee.status || "ปกติ"}
-                        <div className="w-36 h-[1px] bg-gray-400/5 mt-4"></div>
+                        <div className="w-36 h-px bg-gray-400/5 mt-4"></div>
                       </div>
                     </div>
                     <div>
@@ -506,7 +506,7 @@ export default function EmployeesPage() {
 
             {/* คอลัมน์ 2: ลำดับการบริหาร */}
             <div className="lg:col-span-3 flex flex-col">
-              <div className="bg-white rounded-3xl border border-zinc-200/80 p-6 shadow-sm min-h-[300px] flex flex-col justify-between">
+              <div className="bg-white rounded-3xl border border-zinc-200/80 p-6 shadow-sm min-h-75 flex flex-col justify-between">
                 <div>
                   <h3 className="text-sm font-medium text-zinc-900 mb-6">
                     ลำดับการบริหาร{" "}
@@ -517,7 +517,7 @@ export default function EmployeesPage() {
 
                   <div className="relative pl-6 border-l border-zinc-200 ml-2.5 my-6 space-y-6">
                     <div className="relative">
-                      <div className="absolute -left-[30px] top-1.5 size-3 rounded-full bg-zinc-300" />
+                      <div className="absolute -left-7.5 top-1.5 size-3 rounded-full bg-zinc-300" />
                       <p className="text-xs font-medium text-zinc-900">
                         name surname
                       </p>
@@ -527,7 +527,7 @@ export default function EmployeesPage() {
                     </div>
 
                    <div className="relative">
-  <div className="absolute -left-[30px] top-4.5 size-3 rounded-full bg-emerald-500" />
+  <div className="absolute -left-7.5 top-4.5 size-3 rounded-full bg-emerald-500" />
   <div className="bg-[#ebf8f0] border border-[#d1f2dc] rounded-2xl px-3.5 py-2.5">
     {/* แถวบน: ดันป้ายไปชิดขวาสุด */}
     <div className="flex justify-end -mt-1 -mr-1.5 mb-1">
@@ -541,14 +541,14 @@ export default function EmployeesPage() {
       <p className="text-xs font-medium text-zinc-900 truncate">
         {selectedEmployee.name || "name surname"}
       </p>
-      <p className="text-[11px] text-[#105647] font-medium mt-0.5 truncate">
+      <p className="text-[11px] text-anyprimary-green-700 font-medium mt-0.5 truncate">
         {selectedEmployee.position || "Product Manager (ผู้จัดการ)"}
       </p>
     </div>
   </div>
                     </div>
                     <div className="relative">
-                      <div className="absolute -left-[30px] top-2.5 size-3 rounded-full bg-zinc-300" />
+                      <div className="absolute -left-7.5 top-2.5 size-3 rounded-full bg-zinc-300" />
                       <p className="text-xs font-medium text-zinc-900">
                         name surname
                       </p>
@@ -596,7 +596,7 @@ export default function EmployeesPage() {
                     />
                     <button
                       type="submit"
-                      className="font-medium size-9 bg-[#105647] hover:bg-teal-950 text-white rounded-xl flex items-center justify-center shrink-0 cursor-pointer transition"
+                      className="font-medium size-9 bg-anyprimary-green-700 hover:bg-teal-950 text-white rounded-xl flex items-center justify-center shrink-0 cursor-pointer transition"
                     >
                       <Plus className="size-4" />
                     </button>
@@ -624,13 +624,13 @@ export default function EmployeesPage() {
                           ))}
                       </ul>
                     ) : (
-                      <p className="font-medium text-xs text-zinc-400 font-thin">
+                      <p className="text-xs text-zinc-400 font-thin">
                         ไม่มีสิ่งที่กำลังดำเนินการอยู่
                       </p>
                     )}
                   </div>
 
-                  <div className="w-full h-[1px] bg-zinc-100 my-4" />
+                  <div className="w-full h-px bg-zinc-100 my-4" />
 
                   <div>
                     <p className="text-xs font-medium text-zinc-900 mb-1.5">
@@ -704,7 +704,7 @@ export default function EmployeesPage() {
           {/* แถบค้นหา และ ปุ่มเพิ่มพนักงาน ตาม Figma */}
           <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-8 ">
             {/* ช่องค้นหาแบบมีเส้นใต้เงาตาม Figma */}
-            <div className="w-full max-w-[792px] h-11 px-2 flex items-center gap-2.5">
+            <div className="w-full max-w-198 h-11 px-2 flex items-center gap-2.5">
               <Search className="size-5 text-teal-900 shrink-0" />
               <input
                 type="text"
@@ -731,7 +731,7 @@ export default function EmployeesPage() {
                 setModalEmployee(null);
                 setIsAddModalOpen(true);
               }}
-              className="w-48 h-12 bg-teal-900 hover:bg-teal-950 text-white text-xl font-medium  rounded-3xl shadow-[4.5px_4.5px_2.2px_0px_rgba(0,0,0,0.25)] shadow-[inset_1.1px_-2.2px_4.9px_0px_rgba(0,0,0,0.05)] flex items-center justify-center gap-2 transition-all cursor-pointer shrink-0"
+              className="w-48 h-12 bg-teal-900 hover:bg-teal-950 text-white text-xl font-medium  rounded-3xl shadow-[4.5px_4.5px_2.2px_0px_rgba(0,0,0,0.25)] flex items-center justify-center gap-2 transition-all cursor-pointer shrink-0"
             >
               <Plus className="size-7 stroke-[4.00]" />
               <span>เพิ่มพนักงาน</span>
