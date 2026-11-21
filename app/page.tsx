@@ -1,5 +1,5 @@
-import EmployeesPage from "./(human_resouce)/employees/page";
+import LoginPage from "./(login)/login/page";
 
 export default function Home() {
-  return <EmployeesPage />;
+  return <LoginPage />;
 }
