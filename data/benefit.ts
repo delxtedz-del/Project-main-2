@@ -1,4 +1,4 @@
-const benefitsData: Benefits[] = [
+export const benefitsData: Benefits[] = [
   {
     claimId: "CLM-2611-0001",
     empCode: "CS-001",
