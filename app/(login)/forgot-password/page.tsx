@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useRef } from "react";
+import React, { Suspense, useEffect, useState, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react";
 import { updateUserPassword } from "@/data/Login";
@@ -12,7 +12,7 @@ type AuthResponse = {
   devOtp?: string;
 };
 
-export default function ForgotPasswordPage() {
+function ForgotPasswordContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const email = searchParams.get("email") || "Email@Enterprise.com";
@@ -328,5 +328,13 @@ const handleResetPassword = async (e: React.FormEvent) => {
         <div className="absolute inset-0 bg-gradient-to-r from-[#124b3e]/95 via-[#124b3e]/75 to-[#124b3e]/40 mix-blend-multiply" />
       </div>
     </div>
+  );
+}
+
+export default function ForgotPasswordPage() {
+  return (
+    <Suspense fallback={null}>
+      <ForgotPasswordContent />
+    </Suspense>
   );
 }
