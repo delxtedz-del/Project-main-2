@@ -24,7 +24,7 @@
 | Task / Feature | Target File(s) | Notes |
 | :--- | :--- | :--- |
 | Root shell, font, global layout | `app/layout.tsx`, `app/globals.css` | Flexbox `h-screen overflow-hidden`: `<Sidebar />` left + `<main className="flex-1 overflow-y-auto">` right |
-| Sidebar nav links, active route matching, logout | `components/Sidebar.tsx` | Hidden on `/login` & `/register`. Note: `/benefits` link in `menuItems` has no page yet |
+| Sidebar nav links, active route matching, logout | `components/Sidebar.tsx` | Hidden on `/login` & `/register`. Links to `/`, `/oldemployee`, `/benefits`, `/finance` |
 | Live Thai date/time header widget | `components/Clock.tsx` | Client component; renders `"วันนี้ DD <เดือนย่อ> BBBB"` |
 | Login flow & Cloudflare Turnstile | `app/login/page.tsx`, `app/api/verify-turnstile/route.ts`, `data/Login.ts` | Env: `NEXT_PUBLIC_TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET_KEY` (auto-passes if secret unset in dev) |
 | Register flow | `app/register/page.tsx` | Saves mock `credential` to `localStorage` and redirects to `/` |
@@ -35,6 +35,18 @@
 | Benefit Claim Submission Form & Post-submit Tracking | `app/(employee)/claim/page.tsx`, `components/claim/ClaimModals.tsx`, `components/claim/ClaimTrackingView.tsx` | Dynamic fields per `BEN-01`..`BEN-11`, supervisor proxy claims, draft autosave |
 | Benefit Claim History (filter, search, table, pagination) | `app/(employee)/historyclaim/page.tsx`, `components/claim/ClaimHistorySection.tsx`, `components/claim/ClaimHistoryFilter.tsx`, `components/claim/ClaimHistoryTable.tsx`, `components/claim/claimHistoryUtils.ts` | Supports `?status=approved,pending_document,pending_hr` query param (wrapped in `<Suspense>`) |
 | Reusable Thai Date Picker & Multi-Checkbox Filter | `components/claim/DatePickerField.tsx`, `components/claim/SearchableCheckboxFilter.tsx` | Built on `react-aria-components` + TailGrids Calendar |
+| Finance Shell & Sub-Navigation Tabs | `app/(finance)/layout.tsx` | Header bar with `<Clock />` + navigation tabs: `/finance`, `/transfers`, `/requests`, `/pay-cycles`, `/reports`, `/benefits` |
+| Finance Dashboard (financial overview & charts) | `app/(finance)/finance/page.tsx` | Overview cards, monthly net transfer bar chart (Recharts), recent transfers preview |
+| Finance Transfers (records & approval toggle) | `app/(finance)/transfers/page.tsx`, `components/TableTransfers.tsx` | List transfers, toggle pending/approved status, add new transfer modal, sync to `localStorage` |
+| Employee Payment Requests & Benefit Payouts | `app/(finance)/requests/page.tsx` | Bridges employee benefit claims from `data/benefit.ts` (`getLiveBenefitsData`) + custom payouts, search & status filters |
+| Pay Cycles & Cut-off Settings | `app/(finance)/pay-cycles/page.tsx` | Configure cut-off day (20, 25, 28) and payday (28, 30, end-of-month), synced with `localStorage["edbms_pay_cycle_settings"]` |
+| Finance Channel Reports & CSV Import/Export | `app/(finance)/reports/page.tsx` | Summary by channel (BBL, KBANK, SCB, Cheque), monthly chart, CSV export with UTF-8 BOM, CSV import parser |
+| Benefits Management & Payout Dispatch | `app/(finance)/benefits/page.tsx` | Global benefits management view (resolves `/benefits` route) with status pipeline (pending_document -> pending_hr -> approved -> success) |
+| IT System Overview & Security Dashboard | `app/(edbms-its)/it/page.tsx` | Route `/it`: ภาพรวมระบบ EDBMS, สถิติเชื่อมโยงสด (ผู้ใช้ 35 คน, คำขอทั้งหมด, อนุมัติแล้ว, งบสวัสดิการ), Audit Trail ล่าสุด |
+| Access Management (สิทธิ์การเข้าถึง) | `app/(edbms-its)/access/page.tsx` | Route `/access`: ตั้งค่าสิทธิ์ตามตำแหน่ง 5 ระดับ 9 โมดูล บันทึกลง `localStorage["edbms-permissions"]` และจด Audit Log อัตโนมัติ |
+| Audit Trail Logs (บันทึกการใช้งานระบบ) | `app/(edbms-its)/logs/page.tsx` | Route `/logs`: ตรวจสอบย้อนหลัง, กรองวันที่/คำค้น/ระดับเหตุการณ์ (ปกติ/เฝ้าระวัง) บันทึกลง `localStorage["edbms-audit-logs"]` |
+| Benefits Budget & Emergency Fund | `app/(IT)/benefits/page.tsx`, `app/(IT)/budget/page.tsx` | Route `/benefits`: สรุปงบประมาณสวัสดิการประจำปี และงบสำรองฉุกเฉิน เชื่อมต่อ live claims จาก `data/benefit.ts` |
+| Consideration & Approvals | `app/(IT)/approvals/page.tsx` | Route `/approvals`: รายการคำขอรออนุมัติ พร้อมบันทึกสถานะลง `localStorage["budgetApprovalStatus"]` และส่ง Audit Log สู่ IT |
 
 ---
 
@@ -93,9 +105,30 @@ Do **NOT** confuse these two files:
 - **Functions:** `login(email, pass)` (1–3s delay, 80% success, default password `"Pass"`), `logout(token)` (1–3s delay, 80% success).
 - **Roles & Levels:** `EMP` (1–4), `FIN` (5–8), `AD` (9–12), `MD` (13–14), `HR` (15–18), `IT` (19–22). Supervisor levels in `/claim`: `[4, 8, 12, 13, 14, 18, 22]`.
 
+#### `data/hr.ts` — Type Definitions
+#### `data/budget.ts` & `data/it.ts` — Budget & IT Security Layer
+- `data/budget.ts`: จัดการงบสวัสดิการรายปี (`yearBudget`), งบสำรองฉุกเฉิน (`reserve`), รายการคำขอระดับองค์กร (`initialRequests`), ฟังก์ชัน `getLiveBudgetRequests()` เชื่อมต่อคำขอสดที่รอตรวจ และ `getLiveBudgetExpenses(year)` รวบรวมยอดเบิกจ่ายที่อนุมัติแล้ว
+- `data/it.ts`: ฐานข้อมูลและฟังก์ชันกลางของส่วน IT:
+  - `currentUser`: ข้อมูล IT Admin (`ปุนยาพร อย่างมั่น`, `IT SUPER ADMIN`)
+  - `modules` (9 โมดูล) & `positions` (5 ตำแหน่งงาน)
+  - `getLiveSystemStats()`: คำนวณยอดผู้ใช้ (35 คน), คำขอรวม, อนุมัติแล้ว, ยอดงบประมาณเบิกจ่ายสด
+  - `getLiveAuditLogs()` & `addAuditLog(action, detail, level, actor, role)`: บันทึกและดึง Audit Trail
+  - `getLivePermissions()` & `savePermissions(position, perms)`: จัดการสิทธิ์การเข้าถึง
+
 #### `data/hr.ts` & `data/finance.ts` — Type Definitions
 - `data/hr.ts`: `HrNavTab`, `ProjectItem`, `EmployeeCardItem`, `FormerEmployeeItem`, `BenefitItem`.
-- `data/finance.ts`: `NavTab`, `TransferItem`, `PaymentRequestItem`, `ChannelReportItem` (reserved for finance module).
+
+#### `data/finance.ts` — Accounting & Finance Data Layer
+- **Types:** `NavTab`, `TransferItem`, `PaymentRequestItem`, `ChannelReportItem`, `PayCycleSettings`, `MonthlyChartData`.
+- **Functions:**
+  - `getLiveTransfers(): TransferItem[]`: Synchronous retrieval combining seed `INITIAL_TRANSFERS` + `localStorage["edbms_finance_transfers"]`.
+  - `saveTransfers(items: TransferItem[]): void`: Persists transfer records.
+  - `toggleTransferStatus(id: string): TransferItem[]`: Switches transfer between `"pending"` and `"approved"`.
+  - `addTransfer(item): TransferItem[]`: Creates a new transfer record.
+  - `getLivePaymentRequests(): PaymentRequestItem[]`: Bridges live benefit claims from `data/benefit.ts` (`getLiveBenefitsData`) + custom payouts from `localStorage["edbms_finance_requests"]`.
+  - `addPaymentRequest(item): PaymentRequestItem[]`: Adds a new payment request.
+  - `getPayCycleSettings(): PayCycleSettings` & `savePayCycleSettings(settings)`: Reads/writes cut-off day and pay day to `localStorage["edbms_pay_cycle_settings"]`.
+  - `getLiveChannelReports(): ChannelReportItem[]` & `saveChannelReports(reports)`: Reads/writes channel summary records.
 
 ### 3.3 `localStorage` Keys Reference
 
@@ -109,6 +142,10 @@ Do **NOT** confuse these two files:
 | `userBenefit` | `Benefits[]` | `addBenefitClaim`, `cancelBenefitClaim`, `/dashboard`, `/historyclaim` | `/historyclaim` |
 | `benefitQuota_<empCode>_<year>` | `YearlyEmployeeQuotaRecord` | `syncEmployeeYearlyQuota`, `getEmployeeQuotasFast` | `getEmployeeQuotasFast` |
 | `claimFormDraft_<empCode>` | `ClaimFormDraft` | `/claim` (autosave on field change; deleted on submit/reset) | `/claim` (restored on mount) |
+| `edbms_finance_transfers` | `TransferItem[]` | `saveTransfers`, `addTransfer`, `toggleTransferStatus` | `getLiveTransfers` |
+| `edbms_finance_requests` | `PaymentRequestItem[]` | `addPaymentRequest` | `getLivePaymentRequests` |
+| `edbms_pay_cycle_settings` | `PayCycleSettings` | `savePayCycleSettings` | `getPayCycleSettings`, `/pay-cycles` |
+| `edbms_finance_reports` | `ChannelReportItem[]` | `saveChannelReports`, `/reports` CSV import | `getLiveChannelReports`, `/reports` |
 
 ---
 

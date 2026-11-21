@@ -6,7 +6,7 @@ export type User = {
   level: number;
 };
 
-const users: User[] = [
+export const users: User[] = [
   // EMP: พนักงานทั่วไป (Level 1-4)
   { empCode: "CS-001", email: "cs1@thaibmamail.com", password: "Pass", role: "EMP", level: 1 },
   { empCode: "CS-002", email: "cs2@thaibmamail.com", password: "Pass", role: "EMP", level: 2 },
@@ -47,6 +47,7 @@ const users: User[] = [
   { empCode: "HR-018", email: "hr4@thaibmamail.com", password: "Pass", role: "HR", level: 17 },
   { empCode: "HR-019", email: "hr5@thaibmamail.com", password: "Pass", role: "HR", level: 17 },
   { empCode: "HR-020", email: "hr6@thaibmamail.com", password: "Pass", role: "HR", level: 18 },
+  { empCode: "DEV-001", email: "delxtedz@gmail.com", password: "Pass", role: "IT", level: 22 },
 
   // IT: ฝ่ายไอที (Level 19-22)
   { empCode: "IT-028", email: "it1@thaibmamail.com", password: "Pass", role: "IT", level: 19 },
@@ -62,47 +63,80 @@ export type Credential = {
   role: string;
 };
 
-export const login = (email: string, pass: string):Promise<Credential|string> => {
+const PASSWORD_OVERRIDE_KEY = "edbms-password-overrides";
+
+// ดึงรหัสผ่านที่เคยเปลี่ยนใหม่จาก localStorage (ถ้ามี)
+function getEffectivePassword(user: User): string {
+  if (typeof window === "undefined") return user.password;
+  try {
+    const raw = localStorage.getItem(PASSWORD_OVERRIDE_KEY);
+    if (!raw) return user.password;
+    const overrides = JSON.parse(raw) as Record<string, string>;
+    return overrides[user.email.toLowerCase()] ?? user.password;
+  } catch {
+    return user.password;
+  }
+}
+
+// เช็กว่ามีอีเมลนี้ในระบบจริงหรือไม่ (ใช้ก่อนส่ง OTP)
+export const checkEmailExists = (email: string): boolean => {
+  const normalized = email.trim().toLowerCase();
+  return users.some((u) => u.email.toLowerCase() === normalized);
+};
+
+// อัปเดตรหัสผ่านใหม่หลังยืนยัน OTP สำเร็จ
+export const updateUserPassword = (email: string, newPassword: string): boolean => {
+  const normalized = email.trim().toLowerCase();
+  const targetUser = users.find((u) => u.email.toLowerCase() === normalized);
+  if (!targetUser) return false;
+
+  targetUser.password = newPassword;
+
+  if (typeof window !== "undefined") {
+    try {
+      const raw = localStorage.getItem(PASSWORD_OVERRIDE_KEY);
+      const overrides = raw ? (JSON.parse(raw) as Record<string, string>) : {};
+      overrides[normalized] = newPassword;
+      localStorage.setItem(PASSWORD_OVERRIDE_KEY, JSON.stringify(overrides));
+    } catch {
+      /* ignore */
+    }
+  }
+  return true;
+};
+
+export const login = (email: string, pass: string): Promise<Credential> => {
   return new Promise((resolve, reject) => {
-    setTimeout(
-      () => {
-        if (Math.random() <= 0.8) {
-          //find email & pass
-          const user = users.find(
-            (u) => u.email === email && u.password === pass,
-          );
-          // user not found
-          if (user === undefined) {
-            reject("user not found");
-            return;
-          }
-          // user found
-          const newCredential: Credential = {
-            token: crypto.randomUUID(),
-            email: user.email,
-            empCode: user.empCode,
-            role: user.role,
-          };
-          // store & return
-          resolve(newCredential); 
-        } else {
-          reject("connection refused");
-        }
-      },
-      1000 + Math.random() * 2000,
-    );
+    setTimeout(() => {
+      const user = users.find(
+        (u) =>
+          u.email.toLowerCase() === email.trim().toLowerCase() &&
+          getEffectivePassword(u) === pass
+      );
+      if (user === undefined) {
+        reject("user not found");
+        return;
+      }
+      const newCredential: Credential = {
+        token: crypto.randomUUID(),
+        email: user.email,
+        empCode: user.empCode,
+        role: user.role,
+      };
+      resolve(newCredential);
+    }, 400);
   });
 };
 
-export const logout = (token: string):Promise<string> => {
-    return new Promise((resolve,reject) => {
-        setTimeout(()=> {
-            if(Math.random() <= 0.8){
-                //removei 
-                resolve('success')
-            } else {
-                reject("connection refused")
-            }
-        }, 1000 + Math.random() *2000)
-    })
-}
+export const logout = (token: string): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      if (Math.random() <= 0.8) {
+        resolve("success");
+      } else {
+        reject("connection refused");
+      }
+    }, 1000 + Math.random() * 2000);
+  });
+};
+

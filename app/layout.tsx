@@ -1,11 +1,10 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-import Sidebar from "@/components/Sidebar";
+import { AppShell } from "@/components/AppShell";
 
-
-const lineSeedSansTH =  localFont({
-  src : [
+const lineSeedSansTH = localFont({
+  src: [
     {
       path: "../public/fonts/LINESeedSansTH_W_Th.woff2",
       weight: "300",
@@ -33,8 +32,8 @@ const lineSeedSansTH =  localFont({
     },
   ],
   variable: "--font-line-seed-th",
-  display: "swap"
-})
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "EDBMS - ระบบจัดการพนักงาน",
@@ -45,13 +44,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="th" className={lineSeedSansTH.variable}>
       <body className={`${lineSeedSansTH.className} flex h-screen overflow-hidden bg-[#FBFBFC]`}>
-        {/* 1. วาง Sidebar ไว้ด้านซ้าย */}
-        <Sidebar />
-
-        {/* 2. พื้นที่แสดงเนื้อหาของแต่ละหน้า (Scroll ได้อิสระ) */}
-        <main className="flex-1 overflow-y-auto">
-          {children}
-        </main>
+        <AppShell>{children}</AppShell>
       </body>
     </html>
   );

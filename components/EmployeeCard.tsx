@@ -23,10 +23,10 @@ interface EmployeeCardProps {
 export const EmployeeCard: React.FC<EmployeeCardProps> = ({ employee }) => {
   return (
     <div 
-  className="w-full bg-white rounded-[20px] p-4.5 px-5 shadow-[6.21px_6.21px_3.1px_0px_rgba(0,0,0,0.05)] flex flex-col justify-between hover:shadow-md transition-shadow"
-  style={{ border: '0.45px solid #E4E4E7' }} // ปรับสีและขนาดความบางตรงนี้ได้เลย
->
-      <div className="flex items-start justify-between gap-3">
+      className="w-full h-full min-h-[115px] bg-white rounded-[20px] p-4.5 px-5 shadow-[6.21px_6.21px_3.1px_0px_rgba(0,0,0,0.05)] flex flex-col justify-between hover:shadow-md transition-shadow"
+      style={{ border: '0.45px solid #E4E4E7' }}
+    >
+      <div className="flex items-start justify-between gap-3 min-h-[44px]">
         <div className="flex items-start gap-3.5 min-w-0">
           <Avatar size="lg" className="rounded-lg shrink-0">
             <AvatarImage src={employee.avatarUrl} alt={employee.name} className="rounded-lg" />

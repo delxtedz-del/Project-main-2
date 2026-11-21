@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
   try {
-    const { token } = await request.json();
+    const { token } = (await request.json()) as { token?: string };
 
     if (!token) {
       return NextResponse.json(
@@ -33,7 +33,7 @@ export async function POST(request: Request) {
       }
     );
 
-    const outcome = await result.json();
+    const outcome = (await result.json()) as { success?: boolean };
 
     if (outcome.success) {
       return NextResponse.json({ success: true });

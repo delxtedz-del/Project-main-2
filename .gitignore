@@ -39,3 +39,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# ไฟล์ลับ
+seed.sql
+passwords.csv
+.dev.vars
+.env.local

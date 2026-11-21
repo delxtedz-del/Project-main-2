@@ -1,4 +1,6 @@
 import type { NextConfig } from "next";
+import { initOpenNextCloudflareForDev } from "@opennextjs/cloudflare";
+initOpenNextCloudflareForDev();
 
 const nextConfig: NextConfig = {
   /* config options here */
@@ -11,7 +13,6 @@ const nextConfig: NextConfig = {
     rules: {
       "*.css": {
         loaders: ["@tailwindcss/turbopack"],
-        as: "*.css",
       },
     },
   },
