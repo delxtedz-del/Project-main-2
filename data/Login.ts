@@ -6,7 +6,7 @@ export type User = {
   level: number;
 };
 
-const users: User[] = [
+export const users: User[] = [
   // EMP: พนักงานทั่วไป (Level 1-4)
   { empCode: "CS-001", email: "cs1@thaibmamail.com", password: "Pass", role: "EMP", level: 1 },
   { empCode: "CS-002", email: "cs2@thaibmamail.com", password: "Pass", role: "EMP", level: 2 },

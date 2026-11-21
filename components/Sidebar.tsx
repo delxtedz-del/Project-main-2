@@ -5,10 +5,14 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutGrid,
+  LayoutDashboard,
   User,
+  Users,
   UserMinus,
   HeartHandshake,
   CreditCard,
+  History,
+  CheckSquare,
   LogOut,
   ArrowRightLeft,
   FileText,
@@ -44,9 +48,14 @@ const menuItems: MenuItem[] = [
   { name: "ประวัติการเบิกสวัสดีการ", href: "/history", icon: CreditCard, matchHrefs: ["/requests"], category: "EMP" },
   { name: "ข้อมูลส่วนตัว", href: "/finance", icon: CreditCard, matchHrefs: ["/requests"], category: "EMP" },
   // ฝ่าย IT (ยังไม่เอามาใส่)
+  { name: "ภาพรวมงบประมาณ", href: "/benefits", icon: LayoutDashboard, matchHrefs: ["/benefits", "/budget"], category: "IT"},
+  { name: "พิจารณาและอนุมัติ", href: "/approvals", icon: CheckSquare, matchHrefs: ["/approvals"], category: "IT"},
 ];
 
+export type SidebarVariant = "auto" | "hr" | "fin" | "employee" | "it";
+
 export interface SidebarProps {
+  variant?: SidebarVariant;
   user?: {
     name?: string;
     role?: string;
@@ -55,7 +64,7 @@ export interface SidebarProps {
   onLogout?: () => void;
 }
 
-export default function Sidebar({ user, onLogout }: SidebarProps) {
+export default function Sidebar({ variant = "auto", user, onLogout }: SidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
   const [storedUser, setStoredUser] = useState<{
@@ -127,7 +136,9 @@ export default function Sidebar({ user, onLogout }: SidebarProps) {
       ? "HR"
       : currentUser.role === "FIN"
         ? "FIN"
-        : null;
+        : currentUser.role === "IT"
+          ? "IT"
+          : null;
 
   const roleMenuItems = roleSectionCategory
     ? menuItems.filter((item) => item.category === roleSectionCategory)
@@ -140,6 +151,7 @@ export default function Sidebar({ user, onLogout }: SidebarProps) {
     } else {
       try {
         localStorage.removeItem("credential");
+        localStorage.removeItem("currentUser");
         router.push("/login");
       } catch {
         router.push("/login");
@@ -149,9 +161,9 @@ export default function Sidebar({ user, onLogout }: SidebarProps) {
 
   return (
     <aside className="w-80 h-screen font-line-seed-sans-th shrink-0 bg-white rounded-tr-3xl rounded-br-3xl shadow-[10px_-3px_24.8px_0px_rgba(0,0,0,0.03)] flex flex-col justify-between p-7 select-none relative z-20">
-      {/* ส่วนบน: โลโก้ และ เมนูนำทาง */}
+      {/* ส่วนบน: โลโก้ และ รายการเมนูหลักด้านบน */}
       <div>
-        {/* Logo EDBMS ตาม Figma */}
+        {/* Logo EDBMS */}
         <div className="flex items-center gap-3.5 mb-10 px-1">
           <div className="size-11 flex items-center justify-center shrink-0 rounded-xl shadow-[-1px_1px_2px_0px_rgba(0,0,0,0.15)] bg-emerald-50">
             <svg
@@ -195,7 +207,7 @@ export default function Sidebar({ user, onLogout }: SidebarProps) {
           </div>
         </div>
 
-        {/* รายการเมนูหลัก */}
+        {/* รายการเมนูหลักด้านบน */}
         <nav className="flex flex-col gap-2">
           {roleMenuItems.map(renderMenuItem)}
           {roleMenuItems.length > 0 && (
@@ -207,30 +219,43 @@ export default function Sidebar({ user, onLogout }: SidebarProps) {
 
       {/* ส่วนล่าง: โปรไฟล์ผู้ใช้ตาม Figma */}
       <div className="w-full h-20 bg-neutral-100 rounded-[19.56px] px-4 flex items-center justify-between gap-3">
-        <div className="flex items-center gap-3 min-w-0">
-          <img
-            src={currentUser.avatarUrl}
-            alt={currentUser.name}
-            className="size-9 rounded-[5px] object-cover shrink-0 bg-zinc-300"
-          />
-          <div className="min-w-0">
-            <p className="text-sm font-medium text-zinc-900 truncate leading-5">
-              {currentUser.name}
-            </p>
-            <p className="text-xs font-normal text-zinc-900/60 leading-4">
-              {currentUser.role}
-            </p>
+          <div className="flex items-center gap-3 min-w-0">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={currentUser.avatarUrl}
+              alt={currentUser.name}
+              className="size-9 rounded-[5px] object-cover shrink-0 bg-zinc-300"
+            />
+            <div className="min-w-0">
+              <p className="text-sm font-medium text-zinc-900 truncate leading-5">
+                {currentUser.name}
+              </p>
+              <p className="text-xs font-normal text-zinc-900/60 leading-4 truncate">
+                {currentUser.role}
+              </p>
+            </div>
           </div>
-        </div>
 
-        <button
-          onClick={handleLogout}
-          title="ออกจากระบบ"
-          className="text-zinc-500 hover:text-zinc-900 p-1.5 transition-colors cursor-pointer shrink-0"
-        >
-          <LogOut className="size-4" />
-        </button>
+          <button
+            onClick={handleLogout}
+            title="ออกจากระบบ"
+            className="text-zinc-500 hover:text-zinc-900 p-1.5 transition-colors cursor-pointer shrink-0"
+          >
+            <LogOut className="size-4" />
+          </button>
       </div>
     </aside>
   );
+}
+
+export function ITSidebar(props: SidebarProps) {
+  return <Sidebar variant="it" {...props} />;
+}
+
+export function EmployeeSidebar(props: SidebarProps) {
+  return <Sidebar variant="employee" {...props} />;
+}
+
+export function HRSidebar(props: SidebarProps) {
+  return <Sidebar variant="hr" {...props} />;
 }
