@@ -1,8 +1,7 @@
 "use client";
 
 import { cn } from "@/utils/cn";
-import { Search1 } from "@tailgrids/icons";
-import { X } from "lucide-react";
+import { Search, X } from "lucide-react";
 
 export interface SearchInputProps {
   value: string;
@@ -28,7 +27,7 @@ export function SearchInput({
         className
       )}
     >
-      <Search1 className="size-5 shrink-0 text-zinc-600 " />
+      <Search className="size-5 shrink-0 text-zinc-600 " />
 
       <input
         type="text"

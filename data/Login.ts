@@ -107,31 +107,24 @@ export const updateUserPassword = (email: string, newPassword: string): boolean 
 
 export const login = (email: string, pass: string): Promise<Credential> => {
   return new Promise((resolve, reject) => {
-    setTimeout(
-      () => {
-        if (Math.random() <= 0.8) {
-          const user = users.find(
-            (u) =>
-              u.email.toLowerCase() === email.trim().toLowerCase() &&
-              getEffectivePassword(u) === pass
-          );
-          if (user === undefined) {
-            reject("user not found");
-            return;
-          }
-          const newCredential: Credential = {
-            token: crypto.randomUUID(),
-            email: user.email,
-            empCode: user.empCode,
-            role: user.role,
-          };
-          resolve(newCredential);
-        } else {
-          reject("connection refused");
-        }
-      },
-      1000 + Math.random() * 2000
-    );
+    setTimeout(() => {
+      const user = users.find(
+        (u) =>
+          u.email.toLowerCase() === email.trim().toLowerCase() &&
+          getEffectivePassword(u) === pass
+      );
+      if (user === undefined) {
+        reject("user not found");
+        return;
+      }
+      const newCredential: Credential = {
+        token: crypto.randomUUID(),
+        email: user.email,
+        empCode: user.empCode,
+        role: user.role,
+      };
+      resolve(newCredential);
+    }, 400);
   });
 };
 

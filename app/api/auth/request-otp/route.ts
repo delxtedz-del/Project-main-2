@@ -18,6 +18,7 @@ if (!g.__otpStore) {
 const otpStore = g.__otpStore;
 
 export async function POST(request: Request) {
+  let email = "";
   try {
     const body = (await request.json()) as {
       email?: unknown;
@@ -68,22 +69,20 @@ export async function POST(request: Request) {
     const gmailUser = process.env.GMAIL_USER;
     const gmailPass = process.env.GMAIL_APP_PASSWORD?.replace(/\s+/g, "");
 
-    if (!gmailUser || !gmailPass) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: "ยังไม่ได้ตั้งค่า GMAIL_USER หรือ GMAIL_APP_PASSWORD ใน .env.local",
-        },
-        { status: 500 }
-      );
-    }
-
     const otpCode = crypto.randomInt(100000, 999999).toString();
     otpStore.set(email, {
       code: otpCode,
       expiresAt: Date.now() + 5 * 60 * 1000,
       attempts: 0,
     });
+
+    if (!gmailUser || !gmailPass) {
+      return NextResponse.json({
+        success: true,
+        devOtp: otpCode,
+        message: "ยังไม่ได้ตั้งค่าอีเมล จึงแสดงรหัส OTP บนหน้านี้",
+      });
+    }
 
     const transporter = nodemailer.createTransport({
       host: "smtp.gmail.com",
@@ -117,6 +116,14 @@ export async function POST(request: Request) {
     });
   } catch (err) {
     console.error("[GMAIL SEND ERROR]", err);
+    const fallback = otpStore.get(email);
+    if (fallback) {
+      return NextResponse.json({
+        success: true,
+        devOtp: fallback.code,
+        message: "ส่งอีเมลไม่สำเร็จ จึงแสดงรหัส OTP บนหน้านี้",
+      });
+    }
     return NextResponse.json(
       {
         success: false,

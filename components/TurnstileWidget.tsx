@@ -3,18 +3,19 @@
 import { useEffect, useRef, useState } from "react";
 import Script from "next/script";
 
-declare global {
-  interface Window {
-    turnstile?: {
-      render: (
-        container: string | HTMLElement,
-        options: Record<string, unknown>
-      ) => string;
-      reset: (widgetId?: string) => void;
-      remove: (widgetId?: string) => void;
-    };
-  }
-}
+type TurnstileApi = {
+  render: (
+    container: string | HTMLElement,
+    options: Record<string, unknown>
+  ) => string | undefined;
+  reset: (widgetId?: string) => void;
+  remove: (widgetId?: string) => void;
+};
+
+const getTurnstile = (): TurnstileApi | undefined =>
+  typeof window !== "undefined"
+    ? (window as unknown as { turnstile?: TurnstileApi }).turnstile
+    : undefined;
 
 interface TurnstileWidgetProps {
   /** Site Key จาก Cloudflare (ปกติส่งมาจาก process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY) */
@@ -41,7 +42,7 @@ export default function TurnstileWidget({
   language = "th",
 }: TurnstileWidgetProps) {
   const [isScriptReady, setIsScriptReady] = useState(
-    () => typeof window !== "undefined" && Boolean(window.turnstile)
+    () => Boolean(getTurnstile())
   );
   const containerRef = useRef<HTMLDivElement>(null);
   const widgetIdRef = useRef<string | null>(null);
@@ -51,11 +52,12 @@ export default function TurnstileWidget({
   callbacksRef.current = { onVerify, onExpire, onError };
 
   useEffect(() => {
-    if (!isScriptReady || !containerRef.current || !window.turnstile || !siteKey) {
+    const turnstile = getTurnstile();
+    if (!isScriptReady || !containerRef.current || !turnstile || !siteKey) {
       return;
     }
 
-    const id = window.turnstile.render(containerRef.current, {
+    const id = turnstile.render(containerRef.current, {
       sitekey: siteKey,
       theme,
       language,
@@ -70,11 +72,12 @@ export default function TurnstileWidget({
       },
     });
 
-    widgetIdRef.current = id;
+    widgetIdRef.current = id ?? null;
 
     return () => {
-      if (widgetIdRef.current && window.turnstile) {
-        window.turnstile.remove(widgetIdRef.current);
+      const api = getTurnstile();
+      if (widgetIdRef.current && api) {
+        api.remove(widgetIdRef.current);
         widgetIdRef.current = null;
       }
     };
@@ -82,8 +85,9 @@ export default function TurnstileWidget({
 
   // รีเซ็ต widget เมื่อ resetKey เปลี่ยน (ข้ามครั้งแรกที่ resetKey === 0)
   useEffect(() => {
-    if (resetKey > 0 && widgetIdRef.current && window.turnstile) {
-      window.turnstile.reset(widgetIdRef.current);
+    const turnstile = getTurnstile();
+    if (resetKey > 0 && widgetIdRef.current && turnstile) {
+      turnstile.reset(widgetIdRef.current);
     }
   }, [resetKey]);
 

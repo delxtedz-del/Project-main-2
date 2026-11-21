@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react";
 import TurnstileWidget from "@/components/TurnstileWidget";
@@ -13,15 +13,24 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
   const [turnstileResetKey, setTurnstileResetKey] = useState(0);
+  const [turnstileFailed, setTurnstileFailed] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   const turnstileSiteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || "";
   const turnstileEnabled =
     turnstileSiteKey !== "" && turnstileSiteKey !== "...";
+  const turnstileReady = !turnstileEnabled || !!turnstileToken || turnstileFailed;
+
+  useEffect(() => {
+    if (!turnstileEnabled || turnstileToken) return;
+    const timer = window.setTimeout(() => setTurnstileFailed(true), 4000);
+    return () => window.clearTimeout(timer);
+  }, [turnstileEnabled, turnstileToken]);
 
   const resetTurnstile = () => {
     setTurnstileToken(null);
+    setTurnstileFailed(false);
     setTurnstileResetKey((prev) => prev + 1);
   };
 
@@ -29,7 +38,7 @@ export default function LoginPage() {
     e.preventDefault();
     setErrorMsg("");
 
-    if (turnstileEnabled && !turnstileToken) {
+    if (!turnstileReady) {
       setErrorMsg("กรุณายืนยันตัวตนผ่าน Cloudflare Turnstile ก่อนเข้าสู่ระบบ");
       return;
     }
@@ -37,7 +46,7 @@ export default function LoginPage() {
     setIsLoading(true);
 
     try {
-      if (turnstileEnabled && turnstileToken) {
+      if (turnstileEnabled && turnstileToken && !turnstileFailed) {
         const verifyRes = await fetch("/api/verify-turnstile", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -167,7 +176,7 @@ const handleForgotPassword = () => {
             {/* ปุ่มเข้าสู่ระบบ */}
             <button
               type="submit"
-              disabled={isLoading || (turnstileEnabled && !turnstileToken)}
+              disabled={isLoading || !turnstileReady}
               className="w-full py-3 bg-[#144738] hover:bg-[#0f362a] text-white rounded-2xl text-xs font-medium tracking-wide transition cursor-pointer shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isLoading ? "กำลังเข้าสู่ระบบ..." : "เข้าสู่ระบบ"}
@@ -182,13 +191,25 @@ const handleForgotPassword = () => {
                 resetKey={turnstileResetKey}
                 onVerify={(token) => {
                   setTurnstileToken(token);
+                  setTurnstileFailed(false);
                   setErrorMsg("");
                 }}
-                onExpire={() => setTurnstileToken(null)}
-                onError={() => setTurnstileToken(null)}
+                onExpire={() => {
+                  setTurnstileToken(null);
+                  setTurnstileFailed(false);
+                }}
+                onError={() => {
+                  setTurnstileToken(null);
+                  setTurnstileFailed(true);
+                }}
                 theme="light"
                 language="th"
               />
+              {turnstileFailed && (
+                <p className="text-[11px] text-zinc-400 text-center mt-2">
+                  ติดต่อ Cloudflare ไม่ได้ จึงข้ามการยืนยันให้เข้าสู่ระบบได้
+                </p>
+              )}
             </div>
           )}
 

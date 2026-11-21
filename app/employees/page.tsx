@@ -39,11 +39,18 @@ export default function EmployeesPage() {
   useEffect(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) setEmployees(JSON.parse(saved) as ExtendedEmployee[]);
+      if (saved) {
+        const parsed = JSON.parse(saved) as ExtendedEmployee[];
+        window.requestAnimationFrame(() => {
+          setEmployees(parsed);
+        });
+      }
     } catch {
       /* ignore */
     }
-    setHydrated(true);
+    window.requestAnimationFrame(() => {
+      setHydrated(true);
+    });
   }, []);
 
   // บันทึกลง localStorage หลัง hydrate แล้วเท่านั้น เพื่อไม่ทับข้อมูลเดิม
@@ -146,14 +153,14 @@ export default function EmployeesPage() {
   };
 
   return (
-    <div className="p-8 md:p-10 max-w-[1440px] mx-auto min-h-screen">
+    <div className="w-full p-8 md:p-10 max-w-[1440px] mx-auto min-h-screen">
       {selectedEmployee ? (
         /* --- Modal 1: ดูรายละเอียดพนักงานฉบับเต็ม ตาม Figma --- */
-        <div>
+        <div className="w-full">
           {/* ส่วนหัว: หัวข้อหน้า และ ปุ่มย้อนกลับ / วันที่/การแจ้งเตือน */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+          <div className="w-full flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-6">
             <div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 h-9">
                 <h1 className="text-2xl font-medium leading-9 tracking-[0.031em] text-[#0b1e1b]">
                   พนักงาน
                 </h1>
@@ -169,8 +176,8 @@ export default function EmployeesPage() {
             </div>
 
             {/* วันที่ และ กระดิ่งแจ้งเตือน */}
-            <div className="flex items-center gap-3 self-end sm:self-auto text-[#0b1e1b]">
-              <Clock className="text-base font-medium leading-6 tracking-wide text-zinc-900 flex items-center mt-[-22.6px]" />
+            <div className="flex items-center gap-3 h-9 self-end sm:self-auto text-[#0b1e1b]">
+              <Clock className="text-base font-medium leading-9 tracking-wide text-zinc-900 flex items-center" />
               <NotificationBell />
             </div>
           </div>
@@ -666,11 +673,11 @@ export default function EmployeesPage() {
         </div>
       ) : (
         /* --- หน้ารายการพนักงานปกติ (เมื่อไม่ได้เลือกดูพนักงานรายบุคคล) --- */
-        <div>
+        <div className="w-full">
           {/* ส่วนหัว: หัวข้อหน้า และ วันที่/การแจ้งเตือน ตาม Figma */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+          <div className="w-full flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-6">
             <div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 h-9">
                 <h1 className="text-2xl font-medium leading-9 tracking-[0.031em] text-[#0b1e1b]">
                   พนักงาน
                 </h1>
@@ -683,8 +690,8 @@ export default function EmployeesPage() {
             </div>
 
             {/* วันที่ และ กระดิ่งแจ้งเตือน */}
-            <div className="flex items-center gap-3 self-end sm:self-auto text-[#0b1e1b]">
-              <Clock className="text-base font-medium leading-6 tracking-wide text-zinc-900 flex items-center mt-[-22.6px]" />
+            <div className="flex items-center gap-3 h-9 self-end sm:self-auto text-[#0b1e1b]">
+              <Clock className="text-base font-medium leading-9 tracking-wide text-zinc-900 flex items-center" />
               <NotificationBell />
             </div>
           </div>

@@ -33,16 +33,16 @@ export function NotificationBell({ buttonClassName }: NotificationBellProps) {
   }, [isOpen]);
 
   return (
-    <div ref={containerRef} className="relative inline-flex mt-[-22.6px]">
+    <div ref={containerRef} className="relative inline-flex items-center">
       <button
         type="button"
         title="การแจ้งเตือน"
         aria-haspopup="true"
         aria-expanded={isOpen}
         onClick={() => setIsOpen((prev) => !prev)}
-        className={`p-1 transition-colors cursor-pointer ${buttonClassName ?? ""}`}
+        className={`p-1 flex items-center justify-center transition-colors cursor-pointer text-[#0b1e1b] hover:text-black ${buttonClassName ?? ""}`}
       >
-        <Bell className="size-6" />
+        <Bell className="size-5.5" />
       </button>
 
       {isOpen && (
