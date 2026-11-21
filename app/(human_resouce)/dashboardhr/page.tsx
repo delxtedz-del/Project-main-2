@@ -422,7 +422,7 @@ export default function DashboardHrPage() {
                     {/* จัดการ (ลูกศรขวา ไปหน้าจัดการสวัสดิการ) */}
                     <td className="py-4 px-6 text-center whitespace-nowrap">
                       <Link
-                        href="/benefits"
+                        href="/benefitshr"
                         title="ไปหน้าจัดการสวัสดิการ"
                         className="inline-flex items-center justify-center p-1.5 text-zinc-400 hover:text-teal-900 transition-colors"
                       >
