@@ -211,7 +211,8 @@ export default function BenefitsPage() {
   };
 
   // Handle Approve / Reject Claim in Drawer
-  const handleApproveClaim = (claimId: string) => {
+  const handleApproveClaim = async (claimId: string) => {
+    const claim = claims.find((c) => c.claimId === claimId);
     setClaims((prev) =>
       prev.map((c) =>
         c.claimId === claimId
@@ -225,6 +226,23 @@ export default function BenefitsPage() {
           : c
       )
     );
+
+    // ส่งอีเมลแจ้งเตือนไปยัง Gmail จริงทันที
+    try {
+      await fetch("/api/benefits/notify-approval", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          claimId,
+          empName: claim?.empName || "Patipat Srangtan",
+          benefitCategory: claim?.benefitCategory || "สวัสดิการครอบครัว",
+          amount: claim?.amountRequested || 3000,
+          approver: "นาย ปฏิพัทธ์ สร้างตั้น (HR Admin)",
+        }),
+      });
+    } catch {
+      /* ignore */
+    }
   };
 
   const handleRejectClaim = (claimId: string) => {

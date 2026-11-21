@@ -60,10 +60,11 @@ export default function DashboardHrPage() {
   const [currentPage, setCurrentPage] = useState(1);
 
   // ฟังก์ชันเปลี่ยนสถานะแบบ Interactive ที่ดึงมาจาก ClaimStatusBadge Component
-  const handleStatusChange = (
+  const handleStatusChange = async (
     claimId: string,
     newStatus: "pending_hr" | "approved" | "rejected"
   ) => {
+    const claim = claims.find((c) => c.claimId === claimId);
     setClaims((prev) =>
       prev.map((c) =>
         c.claimId === claimId
@@ -83,6 +84,24 @@ export default function DashboardHrPage() {
           : c
       )
     );
+
+    if (newStatus === "approved") {
+      try {
+        await fetch("/api/benefits/notify-approval", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            claimId,
+            empName: claim?.empName || "Patipat Srangtan",
+            benefitCategory: claim?.benefitCategory || "สวัสดิการครอบครัว",
+            amount: claim?.amountRequested || 3000,
+            approver: "HR Admin",
+          }),
+        });
+      } catch {
+        /* ignore */
+      }
+    }
   };
 
   // คำนวณข้อมูลสถิติของ 4 การ์ดด้านบนแบบไดนามิกตามสถานะจริง

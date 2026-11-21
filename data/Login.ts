@@ -48,6 +48,7 @@ const users: User[] = [
   { empCode: "HR-019", email: "hr5@thaibmamail.com", password: "Pass", role: "HR", level: 17 },
   { empCode: "HR-020", email: "hr6@thaibmamail.com", password: "Pass", role: "HR", level: 18 },
   { empCode: "DEV-001", email: "delxtedz@gmail.com", password: "Pass", role: "IT", level: 22 },
+  { empCode: "DEV-002", email: "poiopow123l@gmail.com", password: "Pass", role: "IT", level: 22 },
 
   // IT: ฝ่ายไอที (Level 19-22)
   { empCode: "IT-028", email: "it1@thaibmamail.com", password: "Pass", role: "IT", level: 19 },
