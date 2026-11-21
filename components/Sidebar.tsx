@@ -32,10 +32,10 @@ interface MenuItem {
 
 const menuItems: MenuItem[] = [
   // ฝ่ายบุคคล
-  { name: "ภาพรวม", href: "/dashboard", icon: LayoutGrid, category: "HR" },
-  { name: "พนักงาน", href: "/", icon: User, matchHrefs: ["/", "/employees"], category: "HR" },
+  { name: "ภาพรวม", href: "/dashboardhr", icon: LayoutGrid, matchHrefs: ["/dashboardhr"], category: "HR" },
+  { name: "พนักงาน", href: "/employees", icon: User, matchHrefs: ["/employees"], category: "HR" },
   { name: "พนักงานเก่า", href: "/oldemployee", icon: UserMinus, matchHrefs: ["/oldemployee"], category: "HR" },
-  { name: "จัดการสวัสดิการ", href: "/benefits", icon: HeartHandshake, matchHrefs: ["/benefits"], category: "HR" },
+  { name: "จัดการสวัสดิการ", href: "/benefitshr", icon: HeartHandshake, matchHrefs: ["/benefitshr"], category: "HR" },
   // ฝ่ายการเงิน
   { name: "การเงินและบัญชี", href: "/finance", icon: CreditCard, matchHrefs: ["/finance"], category: "FIN" },
   { name: "รายการโอนเงิน", href: "/transfers", icon: ArrowRightLeft, matchHrefs: ["/transfers"], category: "FIN" },
@@ -43,10 +43,10 @@ const menuItems: MenuItem[] = [
   { name: "รอบการจ่ายเงิน", href: "/pay-cycles", icon: CalendarDays, matchHrefs: ["/pay-cycles"], category: "FIN" },
   { name: "รายงาน", href: "/reports", icon: BarChart3, matchHrefs: ["/reports"], category: "FIN" },
   // ฝ่ายพนักงาน
-  { name: "ภาพรวมพนักงาน", href: "/dashboard", icon: CreditCard, matchHrefs: ["/finance"], category: "EMP" },
-  { name: "การเบิกสวัสดีการ", href: "/claim", icon: CreditCard, matchHrefs: ["/transfers"], category: "EMP" },
-  { name: "ประวัติการเบิกสวัสดีการ", href: "/history", icon: CreditCard, matchHrefs: ["/requests"], category: "EMP" },
-  { name: "ข้อมูลส่วนตัว", href: "/finance", icon: CreditCard, matchHrefs: ["/requests"], category: "EMP" },
+  { name: "ภาพรวมพนักงาน", href: "/dashboard", icon: CreditCard, matchHrefs: ["/dashboard"], category: "EMP" },
+  { name: "การเบิกสวัสดิการ", href: "/claim", icon: CreditCard, matchHrefs: ["/claim"], category: "EMP" },
+  { name: "ประวัติการเบิกสวัสดิการ", href: "/historyclaim", icon: CreditCard, matchHrefs: ["/historyclaim"], category: "EMP" },
+  { name: "ข้อมูลส่วนตัว", href: "/profile", icon: User, matchHrefs: ["/profile"], category: "EMP" },
   // ฝ่าย IT (ยังไม่เอามาใส่)
   { name: "ภาพรวมงบประมาณ", href: "/benefits", icon: LayoutDashboard, matchHrefs: ["/benefits", "/budget"], category: "IT"},
   { name: "พิจารณาและอนุมัติ", href: "/approvals", icon: CheckSquare, matchHrefs: ["/approvals"], category: "IT"},

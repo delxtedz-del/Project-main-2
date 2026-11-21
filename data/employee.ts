@@ -1,4 +1,36 @@
-export const employees = [
+export type EmploymentType = "ฝึกงาน" | "สัญญาจ้าง" | "ประจำ";
+
+export type EmployeeStatus = "active" | "probation" | "resigned" | string;
+
+export interface EmployeeProject {
+  id: string;
+  name: string;
+  completed: boolean;
+}
+
+export interface Employee {
+  id: string;
+  empCode: string;
+  name: string;
+  nickname: string;
+  birthDate: string;
+  phone: string;
+  email: string;
+  address: string;
+  position: string;
+  department: string;
+  employmentType: EmploymentType;
+  status: EmployeeStatus;
+  startDate: string;
+  skills: string[];
+  tenure: string;
+  salary: number;
+  systemRole: string;
+  systemRoleLevel: number;
+  projects: EmployeeProject[];
+}
+
+export const employees: Employee[] = [
   {
     "id": "1",
     "empCode": "CS-001",
@@ -736,3 +768,46 @@ export const employees = [
     "projects": [{ "id": "p35", "name": "Project 35", "completed": true }]
   }
 ];
+
+
+
+// เอาข้อมูลพนักงานทั้งหมดออกมาใช้งาน (จำลองการดึงข้อมูลจาก API)
+let employeeData: Employee[] = [];
+export const fetchEmployees = (): Promise<Employee[]> => {
+  return new Promise((resolve, reject) => {
+    setTimeout(
+      () => {
+        if (Math.random() <= 0.9) {
+          employeeData = employees.map((e) => ({
+            ...e,
+          })) as Employee[];
+          resolve(employeeData);
+        } else {
+          reject("connection refused");
+        }
+      },
+      1000 + Math.random() * 2000,
+    );
+  });
+};
+
+// ฟังก์ชันค้นหาข้อมูลพนักงานรายบุคคลตามรหัสพนักงาน (empCode)
+export const fetchEmployeeByCode = (empCode: string): Promise<Employee> => {
+  return new Promise((resolve, reject) => {
+    setTimeout(
+      () => {
+        if (Math.random() <= 0.9) {
+          const found = employees.find((e) => e.empCode === empCode);
+          if (!found) {
+            reject("ไม่พบข้อมูลพนักงาน");
+            return;
+          }
+          resolve({ ...found });
+        } else {
+          reject("connection refused");
+        }
+      },
+      1000 + Math.random() * 2000,
+    );
+  });
+};
